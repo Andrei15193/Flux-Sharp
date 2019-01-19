@@ -17,4 +17,8 @@
     <PackageIconUrl>https://raw.githubusercontent.com/Andrei15193/Flux-Sharp/master/package_logo.png</PackageIconUrl>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Include="..\LICENSE" Pack="true" PackagePath="" Visible="false" />
+  </ItemGroup>
+
 </Project>
