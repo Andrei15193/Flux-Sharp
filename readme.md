@@ -1,0 +1,2 @@
+Flux Sharp (or Flux#) is an implementation for the Facebook's Flux architecture targeting .NET Framework.
+For more information about the architecture model check out their page on this topic: https://facebook.github.io/flux/docs/overview.html.
