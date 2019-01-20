@@ -5,7 +5,7 @@
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <TreatSpecificWarningsAsErrors />
-    <Description>Basic implementation for the Flux architecture using .NET Framework.</Description>
+    <Description>Provides core types and functionality to implement applications using Flux architecture with .NET.</Description>
     <Authors>Andrei Fangli</Authors>
     <Copyright>Andrei Fangli</Copyright>
     <PackageProjectUrl>https://github.com/Andrei15193/FluxBase</PackageProjectUrl>
@@ -15,6 +15,8 @@
     <PackageReleaseNotes></PackageReleaseNotes>
     <PackageTags>flux architecture user interface ui</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/Andrei15193/FluxBase/master/package_logo.png</PackageIconUrl>
+    <PackageReleaseNotes>Added Dispatcher, can subscribe both handlers and stores to receive dispatched messages. Handlers can wait for other handlers to complete using the WaitFor method.
+Added Store, base class for stores that aims to reduce boilerplate code for notifying observers upon property changes.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
