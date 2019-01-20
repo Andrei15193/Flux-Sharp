@@ -1,4 +1,4 @@
-﻿namespace FluxSharp
+﻿namespace FluxBase
 {
     /// <summary>Represents data that is dispatched from an action.</summary>
     public class ActionData

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-using FluxSharp.Tests.Mocks;
+using FluxBase.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace FluxSharp.Tests
+namespace FluxBase.Tests
 {
     [TestClass]
     public class DispatcherTests

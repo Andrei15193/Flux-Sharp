@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 
-namespace FluxSharp.Tests.Mocks
+namespace FluxBase.Tests.Mocks
 {
     internal class MockStore<TActionData, TResult> : Store where TActionData : ActionData
     {

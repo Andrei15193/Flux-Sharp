@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FluxSharp.Tests.Mocks
+namespace FluxBase.Tests.Mocks
 {
     internal class MockDelegateStore : Store
     {

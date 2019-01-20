@@ -1,4 +1,4 @@
-﻿namespace FluxSharp.Tests.Mocks
+﻿namespace FluxBase.Tests.Mocks
 {
     internal class MockActionData : ActionData
     {

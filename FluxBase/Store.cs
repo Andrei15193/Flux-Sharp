@@ -10,7 +10,7 @@ using System.Linq;
 using System.Linq.Expressions;
 #endif
 
-namespace FluxSharp
+namespace FluxBase
 {
     /// <summary>Represents a store, responsible with managing application view state.</summary>
     public abstract class Store : INotifyPropertyChanged

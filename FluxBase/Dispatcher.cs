@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading;
 
-namespace FluxSharp
+namespace FluxBase
 {
     /// <summary>Represents a dispatcher, responsible for publishing messages to subscribes (stores). Follows the publish-subscribe pattern.</summary>
     public class Dispatcher

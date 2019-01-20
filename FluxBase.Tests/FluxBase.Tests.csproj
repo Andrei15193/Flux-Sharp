@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FluxSharp\FluxSharp.csproj" />
+    <ProjectReference Include="..\FluxBase\FluxBase.csproj" />
   </ItemGroup>
 
 </Project>

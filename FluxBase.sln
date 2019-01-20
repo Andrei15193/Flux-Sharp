@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxSharp", "FluxSharp\FluxSharp.csproj", "{454C4C8C-C4A4-4449-BD84-3D55C81B0B27}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxBase", "FluxBase\FluxBase.csproj", "{454C4C8C-C4A4-4449-BD84-3D55C81B0B27}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxSharp.Tests", "FluxSharp.Tests\FluxSharp.Tests.csproj", "{28674041-1DEF-43FA-A52C-6B83DADAE921}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FluxBase.Tests", "FluxBase.Tests\FluxBase.Tests.csproj", "{28674041-1DEF-43FA-A52C-6B83DADAE921}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
