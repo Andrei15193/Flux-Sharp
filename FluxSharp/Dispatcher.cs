@@ -11,11 +11,10 @@ namespace FluxSharp
         private const int _invokingState = 1;
 
         private int _state = _availableState;
-#if NET20
-        private readonly Dictionary<Action<ActionData>, object> _subscribers = new Dictionary<Action<ActionData>, object>();
-#else
-        private readonly HashSet<Action<ActionData>> _subscribers = new HashSet<Action<ActionData>>();
-#endif
+        private readonly ICollection<Action<ActionData>> _subscribers = new List<Action<ActionData>>();
+        private readonly LinkedList<Action<ActionData>> _remainingSubscribers = new LinkedList<Action<ActionData>>();
+        private ActionData _currentActionData = null;
+        private LinkedListNode<Action<ActionData>> _currentSubscriber = null;
 
         /// <summary>Initializes a new instance of the <see cref="Dispatcher"/> class.</summary>
         public Dispatcher()
@@ -52,11 +51,9 @@ namespace FluxSharp
         {
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));
-#if NET20
-            _subscribers[callback] = null;
-#else
-            _subscribers.Add(callback);
-#endif
+
+            if (!_subscribers.Contains(callback))
+                _subscribers.Add(callback);
             return callback;
         }
 
@@ -80,17 +77,66 @@ namespace FluxSharp
 
             try
             {
-#if NET20
-                foreach (var subscriber in _subscribers.Keys)
-#else
                 foreach (var subscriber in _subscribers)
-#endif
-                    subscriber(actionData);
+                    _remainingSubscribers.AddLast(subscriber);
+
+                _currentActionData = actionData;
+                _currentSubscriber = _remainingSubscribers.First;
+                while (_currentSubscriber != null)
+                {
+                    _currentSubscriber.Value(actionData);
+                    var nextSubscriber = _currentSubscriber.Next;
+                    _remainingSubscribers.Remove(_currentSubscriber);
+                    _currentSubscriber = nextSubscriber;
+                }
             }
             finally
             {
+                _currentSubscriber = null;
+                _remainingSubscribers.Clear();
                 Interlocked.Exchange(ref _state, _availableState);
             }
+        }
+
+        /// <summary>Waits for the registered handler with the provided <paramref name="id"/> to complete.</summary>
+        /// <param name="id">The ID object previously returned from calling the <see cref="Register(Action{ActionData})"/> method.</param>
+        public void WaitFor(object id)
+        {
+            if (id == null)
+                throw new ArgumentNullException(nameof(id));
+
+            if (id is Action<ActionData> callback && _currentSubscriber.Value != callback && _remainingSubscribers.Contains(callback))
+            {
+                _CheckDeadlockWait(callback);
+                _remainingSubscribers.Remove(callback);
+                _currentSubscriber = _remainingSubscribers.AddAfter(_currentSubscriber, callback);
+
+                _currentSubscriber.Value(_currentActionData);
+
+                var previousSubscriber = _currentSubscriber.Previous;
+                _remainingSubscribers.Remove(_currentSubscriber);
+                _currentSubscriber = previousSubscriber;
+            }
+        }
+
+        /// <summary>Waits for the provided <paramref name="store"/> to complete.</summary>
+        /// <param name="store">A <see cref="Store"/> previously subscribed using the <see cref="Register(Store)"/> method.</param>
+        public void WaitFor(Store store)
+        {
+            if (store == null)
+                throw new ArgumentNullException(nameof(store));
+
+            WaitFor(new Action<ActionData>(store.Handle));
+        }
+
+        private void _CheckDeadlockWait(Action<ActionData> callback)
+        {
+            var waitingSubscriber = _remainingSubscribers.First;
+            while (waitingSubscriber != _currentSubscriber && waitingSubscriber.Value != callback)
+                waitingSubscriber = waitingSubscriber.Next;
+
+            if (waitingSubscriber.Value == callback)
+                throw new InvalidOperationException("Deadlock detected. Two handlers are waiting on each other (directly or indirectly) to complete.");
         }
     }
 }
