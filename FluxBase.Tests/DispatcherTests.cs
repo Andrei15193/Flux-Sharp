@@ -637,6 +637,74 @@ namespace FluxBase.Tests
         }
 
         [TestMethod]
+        public void WaitingForMultipleIdsWaitsUntilEachCompletes()
+        {
+            const string first = "first";
+            const string second = "second";
+            const string third = "second";
+            var invocationsList = new List<string>();
+
+            object secondSubscriptionId = null;
+            object thirdSubscriptionId = null;
+            _Dispatcher.Register(
+                actionData =>
+                {
+                    _Dispatcher.WaitFor(secondSubscriptionId, thirdSubscriptionId);
+                    invocationsList.Add(first);
+                }
+            );
+            secondSubscriptionId = _Dispatcher.Register(
+                actionData => invocationsList.Add(second)
+            );
+            thirdSubscriptionId = _Dispatcher.Register(
+                actionData => invocationsList.Add(third)
+            );
+
+            _Dispatcher.Dispatch(null);
+
+            Assert.AreEqual(3, invocationsList.Count);
+            Assert.AreEqual(second, invocationsList[0]);
+            Assert.AreEqual(third, invocationsList[1]);
+            Assert.AreEqual(first, invocationsList[2]);
+        }
+
+        [TestMethod]
+        public void WaitingForMultipleStoresWaitsUntilEachCompletes()
+        {
+            const string first = "first";
+            const string second = "second";
+            const string third = "second";
+            var invocationsList = new List<string>();
+
+            Store secondStore = null;
+            Store thirdStore = null;
+            _Dispatcher.Register(
+                new MockDelegateStore(
+                    actionData =>
+                    {
+                        _Dispatcher.WaitFor(secondStore, thirdStore);
+                        invocationsList.Add(first);
+                    }
+                )
+            );
+            secondStore = new MockDelegateStore(
+                actionData => invocationsList.Add(second)
+            );
+            thirdStore = new MockDelegateStore(
+                actionData => invocationsList.Add(third)
+            );
+            _Dispatcher.Register(secondStore);
+            _Dispatcher.Register(thirdStore);
+
+            _Dispatcher.Dispatch(null);
+
+            Assert.AreEqual(3, invocationsList.Count);
+            Assert.AreEqual(second, invocationsList[0]);
+            Assert.AreEqual(third, invocationsList[1]);
+            Assert.AreEqual(first, invocationsList[2]);
+        }
+
+        [TestMethod]
         public void RegisteringNullCallbackThrowsException()
         {
             var exception = Assert.ThrowsException<ArgumentNullException>(() => _Dispatcher.Register(callback: null));
@@ -676,6 +744,34 @@ namespace FluxBase.Tests
         {
             var exception = Assert.ThrowsException<ArgumentNullException>(() => _Dispatcher.WaitFor(store: null));
             Assert.AreEqual(new ArgumentNullException("store").Message, exception.Message);
+        }
+
+        [TestMethod]
+        public void WaitForMultipleIdsWithNullCollectionThrowsException()
+        {
+            var exception = Assert.ThrowsException<ArgumentNullException>(() => _Dispatcher.WaitFor(ids: null));
+            Assert.AreEqual(new ArgumentNullException("ids").Message, exception.Message);
+        }
+
+        [TestMethod]
+        public void WaitForMultipleIdsContainingNullValuesThrowsException()
+        {
+            var exception = Assert.ThrowsException<ArgumentException>(() => _Dispatcher.WaitFor(new object[] { null }));
+            Assert.AreEqual(new ArgumentException("Cannot contain 'null' ids.", "ids").Message, exception.Message);
+        }
+
+        [TestMethod]
+        public void WaitForMultipleStoresWithNullCollectionThrowsException()
+        {
+            var exception = Assert.ThrowsException<ArgumentNullException>(() => _Dispatcher.WaitFor(stores: null));
+            Assert.AreEqual(new ArgumentNullException("stores").Message, exception.Message);
+        }
+
+        [TestMethod]
+        public void WaitForMultipleStoresContainingNullValuesThrowsException()
+        {
+            var exception = Assert.ThrowsException<ArgumentException>(() => _Dispatcher.WaitFor(new Store[] { null }));
+            Assert.AreEqual(new ArgumentException("Cannot contain 'null' stores.", "stores").Message, exception.Message);
         }
     }
 }

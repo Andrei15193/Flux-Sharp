@@ -100,6 +100,7 @@ namespace FluxBase
 
         /// <summary>Waits for the registered handler with the provided <paramref name="id"/> to complete.</summary>
         /// <param name="id">The ID object previously returned from calling the <see cref="Register(Action{ActionData})"/> method.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="id"/> is <c>null</c>.</exception>
         public void WaitFor(object id)
         {
             if (id == null)
@@ -119,8 +120,32 @@ namespace FluxBase
             }
         }
 
+        /// <summary>Waits for the registered handlers with the provided <paramref name="ids"/> to complete.</summary>
+        /// <param name="ids">A collection of ID objects previously returned from calling the <see cref="Register(Action{ActionData})"/> method.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="ids"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="ids"/> contains <c>null</c> values.</exception>
+        public void WaitFor(IEnumerable<object> ids)
+        {
+            if (ids == null)
+                throw new ArgumentNullException(nameof(ids));
+            foreach (var id in ids)
+            {
+                if (id == null)
+                    throw new ArgumentException("Cannot contain 'null' ids.", nameof(ids));
+                WaitFor(id);
+            }
+        }
+
+        /// <summary>Waits for the registered handlers with the provided <paramref name="ids"/> to complete.</summary>
+        /// <param name="ids">A collection of ID objects previously returned from calling the <see cref="Register(Action{ActionData})"/> method.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="ids"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="ids"/> contains <c>null</c> values.</exception>
+        public void WaitFor(params object[] ids)
+            => WaitFor((IEnumerable<object>)ids);
+
         /// <summary>Waits for the provided <paramref name="store"/> to complete.</summary>
         /// <param name="store">A <see cref="Store"/> previously subscribed using the <see cref="Register(Store)"/> method.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="store"/> is <c>null</c>.</exception>
         public void WaitFor(Store store)
         {
             if (store == null)
@@ -128,6 +153,30 @@ namespace FluxBase
 
             WaitFor(new Action<ActionData>(store.Handle));
         }
+
+        /// <summary>Waits for the provided <paramref name="stores"/> to complete.</summary>
+        /// <param name="stores">A collection of <see cref="Store"/>s previously subscribed using the <see cref="Register(Store)"/> method.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="stores"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="stores"/> contains <c>null</c> values.</exception>
+        public void WaitFor(IEnumerable<Store> stores)
+        {
+            if (stores == null)
+                throw new ArgumentNullException(nameof(stores));
+
+            foreach (var store in stores)
+            {
+                if (store == null)
+                    throw new ArgumentException("Cannot contain 'null' stores.", nameof(stores));
+                WaitFor(store);
+            }
+        }
+
+        /// <summary>Waits for the provided <paramref name="stores"/> to complete.</summary>
+        /// <param name="stores">A collection of <see cref="Store"/>s previously subscribed using the <see cref="Register(Store)"/> method.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="stores"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="stores"/> contains <c>null</c> values.</exception>
+        public void WaitFor(params Store[] stores)
+            => WaitFor((IEnumerable<Store>)stores);
 
         private void _CheckDeadlockWait(Action<ActionData> callback)
         {
