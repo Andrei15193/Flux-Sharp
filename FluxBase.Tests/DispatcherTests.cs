@@ -705,6 +705,32 @@ namespace FluxBase.Tests
         }
 
         [TestMethod]
+        public void IsDispatchingIsUpdatedWhileNotifyingSubscribers()
+        {
+            Assert.IsFalse(_Dispatcher.IsDispatching);
+
+            _Dispatcher.Register(
+                actionData => Assert.IsTrue(_Dispatcher.IsDispatching)
+            );
+            _Dispatcher.Dispatch(null);
+
+            Assert.IsFalse(_Dispatcher.IsDispatching);
+        }
+
+        [TestMethod]
+        public void IsDispatchingIsSetToFalseEvenIfAHandlerThrowsExcetpion()
+        {
+            Assert.IsFalse(_Dispatcher.IsDispatching);
+
+            _Dispatcher.Register(
+                actionData => throw new Exception()
+            );
+            Assert.ThrowsException<Exception>(() => _Dispatcher.Dispatch(null));
+
+            Assert.IsFalse(_Dispatcher.IsDispatching);
+        }
+
+        [TestMethod]
         public void RegisteringNullCallbackThrowsException()
         {
             var exception = Assert.ThrowsException<ArgumentNullException>(() => _Dispatcher.Register(callback: null));

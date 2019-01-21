@@ -8,7 +8,7 @@ namespace FluxBase
     public class Dispatcher
     {
         private const int _availableState = 0;
-        private const int _invokingState = 1;
+        private const int _dispatchingState = 1;
 
         private int _state = _availableState;
         private readonly ICollection<Action<ActionData>> _subscribers = new List<Action<ActionData>>();
@@ -20,6 +20,10 @@ namespace FluxBase
         public Dispatcher()
         {
         }
+
+        /// <summary>Indicates whether the dispatcher is currently dispatching a message.</summary>
+        public bool IsDispatching
+            => _state == _dispatchingState;
 
         /// <summary>Registers the provided <paramref name="store"/> for messages.</summary>
         /// <param name="store">The <see cref="Store"/> to register.</param>
@@ -72,7 +76,7 @@ namespace FluxBase
         /// <param name="actionData">The message to dispatch.</param>
         public void Dispatch(ActionData actionData)
         {
-            if (Interlocked.CompareExchange(ref _state, _invokingState, _availableState) != _availableState)
+            if (Interlocked.CompareExchange(ref _state, _dispatchingState, _availableState) != _availableState)
                 throw new InvalidOperationException("Cannot dispatch message while there is a message currently dispatching.");
 
             try
