@@ -4,7 +4,7 @@ using System.Threading;
 
 namespace FluxBase
 {
-    /// <summary>Represents a dispatcher, responsible for publishing messages to subscribes (stores). Follows the publish-subscribe pattern.</summary>
+    /// <summary>Represents a dispatcher, responsible for publishing messages to subscribers (stores). Follows the publish-subscribe pattern.</summary>
     public class Dispatcher
     {
         private const int _availableState = 0;
@@ -25,7 +25,7 @@ namespace FluxBase
         public bool IsDispatching
             => _state == _dispatchingState;
 
-        /// <summary>Registers the provided <paramref name="store"/> for messages.</summary>
+        /// <summary>Registers the provided <paramref name="store"/> for notifications. A <see cref="Store"/> may only be registered once.</summary>
         /// <param name="store">The <see cref="Store"/> to register.</param>
         /// <returns>Returns an object as an ID that can be used to unregister the provided <paramref name="store"/> from messages.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="store"/> is <c>null</c>.</exception>
@@ -38,7 +38,7 @@ namespace FluxBase
 
         /// <summary>Unregisters the provided <paramref name="store"/> from notifications.</summary>
         /// <param name="store">The previously subscribed to messages using the <see cref="Register(Store)"/> method.</param>
-        /// <returns>Returns <c>true</c> if the store was unregistered; otherwise <c>false</c>.</returns>
+        /// <returns>Returns <c>true</c> if the <paramref name="store"/> was unregistered; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="store"/> is <c>null</c>.</exception>
         public bool Unregister(Store store)
         {
@@ -74,6 +74,7 @@ namespace FluxBase
 
         /// <summary>Publishes a message to all subscribed callbacks.</summary>
         /// <param name="actionData">The message to dispatch.</param>
+        /// <exception cref="InvalidOperationException">Thrown when the dispatcher is already dispatching a message.</exception>
         public void Dispatch(ActionData actionData)
         {
             if (Interlocked.CompareExchange(ref _state, _dispatchingState, _availableState) != _availableState)
@@ -105,6 +106,7 @@ namespace FluxBase
         /// <summary>Waits for the registered handler with the provided <paramref name="id"/> to complete.</summary>
         /// <param name="id">The ID object previously returned from calling the <see cref="Register(Action{ActionData})"/> method.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="id"/> is <c>null</c>.</exception>
+        /// <remarks>The method only blocks if the referred callback is registered and has not yet been executed.</remarks>
         public void WaitFor(object id)
         {
             if (id == null)
@@ -128,6 +130,7 @@ namespace FluxBase
         /// <param name="ids">A collection of ID objects previously returned from calling the <see cref="Register(Action{ActionData})"/> method.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="ids"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="ids"/> contains <c>null</c> values.</exception>
+        /// <remarks>The method only blocks for referred callbacks that are registered and have not yet been executed.</remarks>
         public void WaitFor(IEnumerable<object> ids)
         {
             if (ids == null)
@@ -144,12 +147,14 @@ namespace FluxBase
         /// <param name="ids">A collection of ID objects previously returned from calling the <see cref="Register(Action{ActionData})"/> method.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="ids"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="ids"/> contains <c>null</c> values.</exception>
+        /// <remarks>The method only blocks for referred callbacks that are registered and have not yet been executed.</remarks>
         public void WaitFor(params object[] ids)
             => WaitFor((IEnumerable<object>)ids);
 
         /// <summary>Waits for the provided <paramref name="store"/> to complete.</summary>
         /// <param name="store">A <see cref="Store"/> previously subscribed using the <see cref="Register(Store)"/> method.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="store"/> is <c>null</c>.</exception>
+        /// <remarks>The method only blocks if the referred <paramref name="store"/> is registered and has not yet been executed.</remarks>
         public void WaitFor(Store store)
         {
             if (store == null)
@@ -162,6 +167,7 @@ namespace FluxBase
         /// <param name="stores">A collection of <see cref="Store"/>s previously subscribed using the <see cref="Register(Store)"/> method.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="stores"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="stores"/> contains <c>null</c> values.</exception>
+        /// <remarks>The method only blocks for referred <paramref name="stores"/> that are registered and have not yet been executed.</remarks>
         public void WaitFor(IEnumerable<Store> stores)
         {
             if (stores == null)
@@ -179,6 +185,7 @@ namespace FluxBase
         /// <param name="stores">A collection of <see cref="Store"/>s previously subscribed using the <see cref="Register(Store)"/> method.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="stores"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="stores"/> contains <c>null</c> values.</exception>
+        /// <remarks>The method only blocks for referred <paramref name="stores"/> that are registered and have not yet been executed.</remarks>
         public void WaitFor(params Store[] stores)
             => WaitFor((IEnumerable<Store>)stores);
 

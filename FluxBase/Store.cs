@@ -34,8 +34,23 @@ namespace FluxBase
         /// <summary>Occurs when a property value changes.</summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
-        /// <summary>Handles the provided <paramref name="actionData"/> and updates accordingly.</summary>
+        /// <summary>Handles the provided <paramref name="actionData"/>.</summary>
         /// <param name="actionData">The <see cref="ActionData"/> that was dispatched.</param>
+        /// <remarks>
+        /// <para>
+        ///     The default implementation maps all methods (public and private alike) that return <see cref="void"/>
+        ///     and have one parameter that is an <see cref="ActionData"/> or a subtype of <see cref="ActionData"/>
+        ///     and calls the method whose parameter is closest to the actual type of the provided <paramref name="actionData"/>.
+        /// </para>
+        /// <para>
+        ///     If a method where the actual type of the <paramref name="actionData"/> matches exactly then that method is called,
+        ///     otherwise the method with the most sepcific base class (i.e.: the closest base type in the inheritance chain)
+        ///     is called if one can be found.
+        /// </para>
+        /// <para>
+        ///     The search includes methods defined in base <see cref="Store"/>s even if they are private.
+        /// </para>
+        /// </remarks>
         protected internal virtual void Handle(ActionData actionData)
             => _TryFindDispatchHandler(actionData?.GetType() ?? typeof(ActionData))?.Invoke(actionData);
 
@@ -54,6 +69,8 @@ namespace FluxBase
         /// <typeparam name="TProperty">The type of the property that was changed.</typeparam>
         /// <param name="property">The property to update.</param>
         /// <param name="value">The new value to set to the property.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="property"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="property"/> does not resolve to a property of the current instance.</exception>
         /// <remarks>
         /// This method simplifies stores by removing the boilerplate code for writing properties that notify
         /// observers upon change. Using this method the store class can have less clutter. Without using this
@@ -92,7 +109,7 @@ namespace FluxBase
         /// }
         /// </code>
         /// There is no need to explicitly back properties with a field and manually raise the
-        /// <c>PropertyChanged</c> event. This is all done by <c>SetProperty</c>.
+        /// <see cref="PropertyChanged"/> event. This is all done by the <c>SetProperty</c> method.
         /// </remarks>
         protected void SetProperty<TProperty>(Expression<Func<TProperty>> property, TProperty value)
         {
