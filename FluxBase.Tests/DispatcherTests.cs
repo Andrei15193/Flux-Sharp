@@ -23,7 +23,7 @@ namespace FluxBase.Tests
             var invocationCount = 0;
 
             _Dispatcher.Register(
-                actionData => Interlocked.Increment(ref invocationCount)
+                action => Interlocked.Increment(ref invocationCount)
             );
             _Dispatcher.Dispatch(null);
 
@@ -35,7 +35,7 @@ namespace FluxBase.Tests
         {
             var invocationCount = 0;
             var store = new MockDelegateStore(
-                actionData => Interlocked.Increment(ref invocationCount)
+                action => Interlocked.Increment(ref invocationCount)
             );
 
             _Dispatcher.Register(store);
@@ -49,7 +49,7 @@ namespace FluxBase.Tests
         {
             var invocationCount = 0;
 
-            void Callback(ActionData actionData) => Interlocked.Increment(ref invocationCount);
+            void Callback(object action) => Interlocked.Increment(ref invocationCount);
 
             var firstRegistrationId = _Dispatcher.Register(Callback);
             var secondRegistrationId = _Dispatcher.Register(Callback);
@@ -64,7 +64,7 @@ namespace FluxBase.Tests
         {
             var invocationCount = 0;
             var store = new MockDelegateStore(
-                actionData => Interlocked.Increment(ref invocationCount)
+                action => Interlocked.Increment(ref invocationCount)
             );
 
             var firstRegistrationId = _Dispatcher.Register(store);
@@ -81,7 +81,7 @@ namespace FluxBase.Tests
             var invocationCount = 0;
 
             var registrationId = _Dispatcher.Register(
-                actionData => Interlocked.Increment(ref invocationCount)
+                action => Interlocked.Increment(ref invocationCount)
             );
             _Dispatcher.Unregister(registrationId);
             _Dispatcher.Dispatch(null);
@@ -94,7 +94,7 @@ namespace FluxBase.Tests
         {
             var invocationCount = 0;
             var store = new MockDelegateStore(
-                actionData => Interlocked.Increment(ref invocationCount)
+                action => Interlocked.Increment(ref invocationCount)
             );
 
             _Dispatcher.Register(store);
@@ -110,7 +110,7 @@ namespace FluxBase.Tests
             var invocationCount = 0;
 
             var registrationId = _Dispatcher.Register(
-                actionData => Interlocked.Increment(ref invocationCount)
+                action => Interlocked.Increment(ref invocationCount)
             );
             Assert.IsTrue(_Dispatcher.Unregister(registrationId));
 
@@ -122,7 +122,7 @@ namespace FluxBase.Tests
         {
             var invocationCount = 0;
             var store = new MockDelegateStore(
-                actionData => Interlocked.Increment(ref invocationCount)
+                action => Interlocked.Increment(ref invocationCount)
             );
 
             var registrationId = _Dispatcher.Register(store);
@@ -134,28 +134,28 @@ namespace FluxBase.Tests
         [TestMethod]
         public void DispatchingNullPassesNull()
         {
-            ActionData actualActionData = null;
+            object actualAction = null;
 
             _Dispatcher.Register(
-                actionData => Interlocked.Exchange(ref actualActionData, actionData)
+                action => Interlocked.Exchange(ref actualAction, action)
             );
             _Dispatcher.Dispatch(null);
 
-            Assert.IsNull(actualActionData);
+            Assert.IsNull(actualAction);
         }
 
         [TestMethod]
-        public void DispatchPassesSameActionData()
+        public void DispatchPassesSameAction()
         {
-            var expectedActionData = new MockActionData();
-            ActionData actualActionData = null;
+            var expectedAction = new object();
+            object actualAction = null;
 
             _Dispatcher.Register(
-                actionData => Interlocked.Exchange(ref actualActionData, actionData)
+                action => Interlocked.Exchange(ref actualAction, action)
             );
-            _Dispatcher.Dispatch(expectedActionData);
+            _Dispatcher.Dispatch(expectedAction);
 
-            Assert.AreSame(expectedActionData, actualActionData);
+            Assert.AreSame(expectedAction, actualAction);
         }
 
         [TestMethod]
@@ -167,14 +167,14 @@ namespace FluxBase.Tests
 
             object secondSubscriptionId = null;
             var firstSubscriptionId = _Dispatcher.Register(
-                actionData =>
+                action =>
                 {
                     _Dispatcher.WaitFor(secondSubscriptionId);
                     invocationsList.Add(first);
                 }
             );
             secondSubscriptionId = _Dispatcher.Register(
-                actionData => invocationsList.Add(second)
+                action => invocationsList.Add(second)
             );
 
             _Dispatcher.Dispatch(null);
@@ -196,7 +196,7 @@ namespace FluxBase.Tests
                 var indexCopy = index;
                 registrationIds.Add(
                     _Dispatcher.Register(
-                        actionData =>
+                        action =>
                         {
                             if (indexCopy < chainedHandlersCount - 1)
                                 _Dispatcher.WaitFor(registrationIds[indexCopy + 1]);
@@ -205,7 +205,7 @@ namespace FluxBase.Tests
                     )
                 );
                 _Dispatcher.Register(
-                    actionData => invocationsList.Add($"Not blocked {indexCopy}")
+                    action => invocationsList.Add($"Not blocked {indexCopy}")
                 );
             }
 
@@ -225,10 +225,10 @@ namespace FluxBase.Tests
             object firstSubscriptionId = null;
             object secondSubscriptionId = null;
             firstSubscriptionId = _Dispatcher.Register(
-                actionData => _Dispatcher.WaitFor(secondSubscriptionId)
+                action => _Dispatcher.WaitFor(secondSubscriptionId)
             );
             secondSubscriptionId = _Dispatcher.Register(
-                actionData => _Dispatcher.WaitFor(firstSubscriptionId)
+                action => _Dispatcher.WaitFor(firstSubscriptionId)
             );
 
             var exception = Assert.ThrowsException<InvalidOperationException>(() => _Dispatcher.Dispatch(null));
@@ -250,7 +250,7 @@ namespace FluxBase.Tests
                 var indexCopy = index;
                 registrationIds.Add(
                     _Dispatcher.Register(
-                        actionData => _Dispatcher.WaitFor(registrationIds[(indexCopy + 1) % chainedHandlersCount])
+                        action => _Dispatcher.WaitFor(registrationIds[(indexCopy + 1) % chainedHandlersCount])
                     )
                 );
             }
@@ -275,24 +275,24 @@ namespace FluxBase.Tests
             object secondSubscriptionId = null;
             object fourthSubscriptionId = null;
             var firstSubscriptionId = _Dispatcher.Register(
-                actionData =>
+                action =>
                 {
                     _Dispatcher.WaitFor(secondSubscriptionId);
                     invocationsList.Add(first);
                 }
             );
             secondSubscriptionId = _Dispatcher.Register(
-                actionData => invocationsList.Add(second)
+                action => invocationsList.Add(second)
             );
             var thirdSubscriptionId = _Dispatcher.Register(
-                actionData =>
+                action =>
                 {
                     _Dispatcher.WaitFor(fourthSubscriptionId);
                     invocationsList.Add(third);
                 }
             );
             fourthSubscriptionId = _Dispatcher.Register(
-                actionData => invocationsList.Add(fourth)
+                action => invocationsList.Add(fourth)
             );
 
             _Dispatcher.Dispatch(null);
@@ -312,10 +312,10 @@ namespace FluxBase.Tests
             var invocationsList = new List<string>();
 
             var firstSubscriptionId = _Dispatcher.Register(
-                actionData => invocationsList.Add(first)
+                action => invocationsList.Add(first)
             );
             var secondSubscriptionId = _Dispatcher.Register(
-                actionData =>
+                action =>
                 {
                     _Dispatcher.WaitFor(firstSubscriptionId);
                     invocationsList.Add(second);
@@ -337,10 +337,10 @@ namespace FluxBase.Tests
             var invocationsList = new List<string>();
 
             var firstSubscriptionId = _Dispatcher.Register(
-                actionData => invocationsList.Add(first)
+                action => invocationsList.Add(first)
             );
             var secondSubscriptionId = _Dispatcher.Register(
-                actionData =>
+                action =>
                 {
                     _Dispatcher.WaitFor(firstSubscriptionId);
                     invocationsList.Add(second);
@@ -364,7 +364,7 @@ namespace FluxBase.Tests
             object secondSubscriptionId = null;
             var firstSubscriptionId = _Dispatcher.Register(
                 new MockDelegateStore(
-                    actionData =>
+                    action =>
                     {
                         _Dispatcher.WaitFor(secondSubscriptionId);
                         invocationsList.Add(first);
@@ -373,7 +373,7 @@ namespace FluxBase.Tests
             );
             secondSubscriptionId = _Dispatcher.Register(
                 new MockDelegateStore(
-                    actionData => invocationsList.Add(second)
+                    action => invocationsList.Add(second)
                 )
             );
 
@@ -397,7 +397,7 @@ namespace FluxBase.Tests
                 registrationIds.Add(
                     _Dispatcher.Register(
                         new MockDelegateStore(
-                            actionData =>
+                            action =>
                             {
                                 if (indexCopy < chainedHandlersCount - 1)
                                     _Dispatcher.WaitFor(registrationIds[indexCopy + 1]);
@@ -408,7 +408,7 @@ namespace FluxBase.Tests
                 );
                 _Dispatcher.Register(
                     new MockDelegateStore(
-                        actionData => invocationsList.Add($"Not blocked {indexCopy}")
+                        action => invocationsList.Add($"Not blocked {indexCopy}")
                     )
                 );
             }
@@ -430,12 +430,12 @@ namespace FluxBase.Tests
             object secondSubscriptionId = null;
             firstSubscriptionId = _Dispatcher.Register(
                 new MockDelegateStore(
-                    actionData => _Dispatcher.WaitFor(secondSubscriptionId)
+                    action => _Dispatcher.WaitFor(secondSubscriptionId)
                 )
             );
             secondSubscriptionId = _Dispatcher.Register(
                 new MockDelegateStore(
-                    actionData => _Dispatcher.WaitFor(firstSubscriptionId)
+                    action => _Dispatcher.WaitFor(firstSubscriptionId)
                 )
             );
 
@@ -459,7 +459,7 @@ namespace FluxBase.Tests
                 registrationIds.Add(
                     _Dispatcher.Register(
                         new MockDelegateStore(
-                            actionData => _Dispatcher.WaitFor(registrationIds[(indexCopy + 1) % chainedHandlersCount])
+                            action => _Dispatcher.WaitFor(registrationIds[(indexCopy + 1) % chainedHandlersCount])
                         )
                     )
                 );
@@ -486,7 +486,7 @@ namespace FluxBase.Tests
             object fourthSubscriptionId = null;
             var firstSubscriptionId = _Dispatcher.Register(
                 new MockDelegateStore(
-                    actionData =>
+                    action =>
                     {
                         _Dispatcher.WaitFor(secondSubscriptionId);
                         invocationsList.Add(first);
@@ -495,12 +495,12 @@ namespace FluxBase.Tests
             );
             secondSubscriptionId = _Dispatcher.Register(
                 new MockDelegateStore(
-                    actionData => invocationsList.Add(second)
+                    action => invocationsList.Add(second)
                 )
             );
             var thirdSubscriptionId = _Dispatcher.Register(
                 new MockDelegateStore(
-                    actionData =>
+                    action =>
                     {
                         _Dispatcher.WaitFor(fourthSubscriptionId);
                         invocationsList.Add(third);
@@ -509,7 +509,7 @@ namespace FluxBase.Tests
             );
             fourthSubscriptionId = _Dispatcher.Register(
                 new MockDelegateStore(
-                    actionData => invocationsList.Add(fourth)
+                    action => invocationsList.Add(fourth)
                 )
             );
 
@@ -531,12 +531,12 @@ namespace FluxBase.Tests
 
             var firstSubscriptionId = _Dispatcher.Register(
                 new MockDelegateStore(
-                    actionData => invocationsList.Add(first)
+                    action => invocationsList.Add(first)
                 )
             );
             var secondSubscriptionId = _Dispatcher.Register(
                 new MockDelegateStore(
-                    actionData =>
+                    action =>
                     {
                         _Dispatcher.WaitFor(firstSubscriptionId);
                         invocationsList.Add(second);
@@ -560,12 +560,12 @@ namespace FluxBase.Tests
 
             var firstSubscriptionId = _Dispatcher.Register(
                 new MockDelegateStore(
-                    actionData => invocationsList.Add(first)
+                    action => invocationsList.Add(first)
                 )
             );
             var secondSubscriptionId = _Dispatcher.Register(
                 new MockDelegateStore(
-                    actionData =>
+                    action =>
                     {
                         _Dispatcher.WaitFor(firstSubscriptionId);
                         invocationsList.Add(second);
@@ -588,10 +588,10 @@ namespace FluxBase.Tests
             var invocationsList = new List<string>();
 
             var store = new MockDelegateStore(
-                actionData => invocationsList.Add(second)
+                action => invocationsList.Add(second)
             );
             var firstSubscriptionId = _Dispatcher.Register(
-                actionData =>
+                action =>
                 {
                     _Dispatcher.WaitFor(store);
                     invocationsList.Add(first);
@@ -616,7 +616,7 @@ namespace FluxBase.Tests
             object secondSubscriptionId = null;
             _Dispatcher.Register(
                 new MockDelegateStore(
-                    actionData =>
+                    action =>
                     {
                         _Dispatcher.WaitFor(secondSubscriptionId);
                         invocationsList.Add(first);
@@ -625,7 +625,7 @@ namespace FluxBase.Tests
             );
             secondSubscriptionId = _Dispatcher.Register(
                 new MockDelegateStore(
-                    actionData => invocationsList.Add(second)
+                    action => invocationsList.Add(second)
                 )
             );
 
@@ -647,17 +647,17 @@ namespace FluxBase.Tests
             object secondSubscriptionId = null;
             object thirdSubscriptionId = null;
             _Dispatcher.Register(
-                actionData =>
+                action =>
                 {
                     _Dispatcher.WaitFor(secondSubscriptionId, thirdSubscriptionId);
                     invocationsList.Add(first);
                 }
             );
             secondSubscriptionId = _Dispatcher.Register(
-                actionData => invocationsList.Add(second)
+                action => invocationsList.Add(second)
             );
             thirdSubscriptionId = _Dispatcher.Register(
-                actionData => invocationsList.Add(third)
+                action => invocationsList.Add(third)
             );
 
             _Dispatcher.Dispatch(null);
@@ -680,7 +680,7 @@ namespace FluxBase.Tests
             Store thirdStore = null;
             _Dispatcher.Register(
                 new MockDelegateStore(
-                    actionData =>
+                    action =>
                     {
                         _Dispatcher.WaitFor(secondStore, thirdStore);
                         invocationsList.Add(first);
@@ -688,10 +688,10 @@ namespace FluxBase.Tests
                 )
             );
             secondStore = new MockDelegateStore(
-                actionData => invocationsList.Add(second)
+                action => invocationsList.Add(second)
             );
             thirdStore = new MockDelegateStore(
-                actionData => invocationsList.Add(third)
+                action => invocationsList.Add(third)
             );
             _Dispatcher.Register(secondStore);
             _Dispatcher.Register(thirdStore);
@@ -710,7 +710,7 @@ namespace FluxBase.Tests
             Assert.IsFalse(_Dispatcher.IsDispatching);
 
             _Dispatcher.Register(
-                actionData => Assert.IsTrue(_Dispatcher.IsDispatching)
+                action => Assert.IsTrue(_Dispatcher.IsDispatching)
             );
             _Dispatcher.Dispatch(null);
 
@@ -723,7 +723,7 @@ namespace FluxBase.Tests
             Assert.IsFalse(_Dispatcher.IsDispatching);
 
             _Dispatcher.Register(
-                actionData => throw new Exception()
+                action => throw new Exception()
             );
             Assert.ThrowsException<Exception>(() => _Dispatcher.Dispatch(null));
 

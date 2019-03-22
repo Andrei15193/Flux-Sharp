@@ -11,10 +11,10 @@ namespace FluxBase
         private const int _dispatchingState = 1;
 
         private int _state = _availableState;
-        private readonly ICollection<Action<ActionData>> _subscribers = new List<Action<ActionData>>();
-        private readonly LinkedList<Action<ActionData>> _remainingSubscribers = new LinkedList<Action<ActionData>>();
-        private ActionData _currentActionData = null;
-        private LinkedListNode<Action<ActionData>> _currentSubscriber = null;
+        private readonly ICollection<Action<object>> _subscribers = new List<Action<object>>();
+        private readonly LinkedList<Action<object>> _remainingSubscribers = new LinkedList<Action<object>>();
+        private object _currentAction = null;
+        private LinkedListNode<Action<object>> _currentSubscriber = null;
 
         /// <summary>Initializes a new instance of the <see cref="Dispatcher"/> class.</summary>
         public Dispatcher()
@@ -51,7 +51,7 @@ namespace FluxBase
         /// <param name="callback">The callback that will handle messages published by the dispatcher.</param>
         /// <returns>Returns an object as an ID that can be used to unregister the provided <paramref name="callback"/> from messages.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="callback"/> is <c>null</c>.</exception>
-        public object Register(Action<ActionData> callback)
+        public object Register(Action<object> callback)
         {
             if (callback == null)
                 throw new ArgumentNullException(nameof(callback));
@@ -62,20 +62,20 @@ namespace FluxBase
         }
 
         /// <summary>Unregisters the callback with the provided <paramref name="id"/> from notifications.</summary>
-        /// <param name="id">The ID object previously returned from calling the <see cref="Register(Action{ActionData})"/> method.</param>
+        /// <param name="id">The ID object previously returned from calling the <see cref="Register(Action{object})"/> method.</param>
         /// <returns>Returns <c>true</c> if the handler was unregistered; otherwise <c>false</c>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="id"/> is <c>null</c>.</exception>
         public bool Unregister(object id)
         {
             if (id == null)
                 throw new ArgumentNullException(nameof(id));
-            return id is Action<ActionData> callback && _subscribers.Remove(callback);
+            return id is Action<object> callback && _subscribers.Remove(callback);
         }
 
         /// <summary>Publishes a message to all subscribed callbacks.</summary>
-        /// <param name="actionData">The message to dispatch.</param>
+        /// <param name="action">The action to dispatch.</param>
         /// <exception cref="InvalidOperationException">Thrown when the dispatcher is already dispatching a message.</exception>
-        public void Dispatch(ActionData actionData)
+        public void Dispatch(object action)
         {
             if (Interlocked.CompareExchange(ref _state, _dispatchingState, _availableState) != _availableState)
                 throw new InvalidOperationException("Cannot dispatch message while there is a message currently dispatching.");
@@ -85,11 +85,11 @@ namespace FluxBase
                 foreach (var subscriber in _subscribers)
                     _remainingSubscribers.AddLast(subscriber);
 
-                _currentActionData = actionData;
+                _currentAction = action;
                 _currentSubscriber = _remainingSubscribers.First;
                 while (_currentSubscriber != null)
                 {
-                    _currentSubscriber.Value(actionData);
+                    _currentSubscriber.Value(action);
                     var nextSubscriber = _currentSubscriber.Next;
                     _remainingSubscribers.Remove(_currentSubscriber);
                     _currentSubscriber = nextSubscriber;
@@ -104,7 +104,7 @@ namespace FluxBase
         }
 
         /// <summary>Waits for the registered handler with the provided <paramref name="id"/> to complete.</summary>
-        /// <param name="id">The ID object previously returned from calling the <see cref="Register(Action{ActionData})"/> method.</param>
+        /// <param name="id">The ID object previously returned from calling the <see cref="Register(Action{object})"/> method.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="id"/> is <c>null</c>.</exception>
         /// <remarks>The method only blocks if the referred callback is registered and has not yet been executed.</remarks>
         public void WaitFor(object id)
@@ -112,13 +112,13 @@ namespace FluxBase
             if (id == null)
                 throw new ArgumentNullException(nameof(id));
 
-            if (id is Action<ActionData> callback && _currentSubscriber.Value != callback && _remainingSubscribers.Contains(callback))
+            if (id is Action<object> callback && _currentSubscriber.Value != callback && _remainingSubscribers.Contains(callback))
             {
                 _CheckDeadlockWait(callback);
                 _remainingSubscribers.Remove(callback);
                 _currentSubscriber = _remainingSubscribers.AddAfter(_currentSubscriber, callback);
 
-                _currentSubscriber.Value(_currentActionData);
+                _currentSubscriber.Value(_currentAction);
 
                 var previousSubscriber = _currentSubscriber.Previous;
                 _remainingSubscribers.Remove(_currentSubscriber);
@@ -127,7 +127,7 @@ namespace FluxBase
         }
 
         /// <summary>Waits for the registered handlers with the provided <paramref name="ids"/> to complete.</summary>
-        /// <param name="ids">A collection of ID objects previously returned from calling the <see cref="Register(Action{ActionData})"/> method.</param>
+        /// <param name="ids">A collection of ID objects previously returned from calling the <see cref="Register(Action{object})"/> method.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="ids"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="ids"/> contains <c>null</c> values.</exception>
         /// <remarks>The method only blocks for referred callbacks that are registered and have not yet been executed.</remarks>
@@ -144,7 +144,7 @@ namespace FluxBase
         }
 
         /// <summary>Waits for the registered handlers with the provided <paramref name="ids"/> to complete.</summary>
-        /// <param name="ids">A collection of ID objects previously returned from calling the <see cref="Register(Action{ActionData})"/> method.</param>
+        /// <param name="ids">A collection of ID objects previously returned from calling the <see cref="Register(Action{object})"/> method.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="ids"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="ids"/> contains <c>null</c> values.</exception>
         /// <remarks>The method only blocks for referred callbacks that are registered and have not yet been executed.</remarks>
@@ -160,7 +160,7 @@ namespace FluxBase
             if (store == null)
                 throw new ArgumentNullException(nameof(store));
 
-            WaitFor(new Action<ActionData>(store.Handle));
+            WaitFor(new Action<object>(store.Handle));
         }
 
         /// <summary>Waits for the provided <paramref name="stores"/> to complete.</summary>
@@ -189,7 +189,7 @@ namespace FluxBase
         public void WaitFor(params Store[] stores)
             => WaitFor((IEnumerable<Store>)stores);
 
-        private void _CheckDeadlockWait(Action<ActionData> callback)
+        private void _CheckDeadlockWait(Action<object> callback)
         {
             var waitingSubscriber = _remainingSubscribers.First;
             while (waitingSubscriber != _currentSubscriber && waitingSubscriber.Value != callback)

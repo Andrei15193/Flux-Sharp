@@ -2,9 +2,9 @@
 
 namespace FluxBase.Tests.Mocks
 {
-    internal class MockStore<TActionData, TResult> : Store where TActionData : ActionData
+    internal class MockStore<TAction, TResult> : Store
     {
-        public static MockStore<TActionData, TResult> Instance { get; } = new MockStore<TActionData, TResult>();
+        public static MockStore<TAction, TResult> Instance { get; } = new MockStore<TAction, TResult>();
 
         private int _invocationCount = 0;
 
@@ -15,29 +15,34 @@ namespace FluxBase.Tests.Mocks
         {
         }
 
-        private TResult _Handle(ActionData actionData)
+        public TResult HandleAction(object action)
+        {
+            Interlocked.Increment(ref _invocationCount);
+            return default(TResult);
+        }
+
+        private TResult _HandleAction(object action)
         {
             Interlocked.Increment(ref _invocationCount);
             return default(TResult);
         }
     }
 
-    internal class MockStore<TActionData> : Store where TActionData : ActionData
+    internal class MockStore<TAction> : Store
     {
         private int _invocationCount = 0;
 
         public int InvocationCount
             => _invocationCount;
 
-        public MockStore()
-        {
-        }
+        public void HandleAction(TAction action)
+            => Interlocked.Increment(ref _invocationCount);
 
-        private void _Handle(TActionData actionData)
+        private void _HandleAction(TAction action)
             => Interlocked.Increment(ref _invocationCount);
     }
 
-    internal sealed class MockStore : MockStore<ActionData>
+    internal sealed class MockStore : MockStore<object>
     {
         public MockStore()
         {

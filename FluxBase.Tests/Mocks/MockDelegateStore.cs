@@ -4,14 +4,14 @@ namespace FluxBase.Tests.Mocks
 {
     internal class MockDelegateStore : Store
     {
-        private readonly Action<ActionData> _callback;
+        private readonly Action<object> _callback;
 
-        public MockDelegateStore(Action<ActionData> callback)
+        public MockDelegateStore(Action<object> callback)
         {
             _callback = callback;
         }
 
-        protected override void Handle(ActionData actionData)
-            => _callback(actionData);
+        public override void Handle(object action)
+            => _callback(action);
     }
 }

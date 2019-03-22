@@ -34,16 +34,16 @@ namespace FluxBase
         /// <summary>Occurs when a property value changes.</summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
-        /// <summary>Handles the provided <paramref name="actionData"/>.</summary>
-        /// <param name="actionData">The <see cref="ActionData"/> that was dispatched.</param>
+        /// <summary>Handles the provided <paramref name="action"/>.</summary>
+        /// <param name="action">The action that was dispatched.</param>
         /// <remarks>
         /// <para>
-        ///     The default implementation maps all methods (public and private alike) that return <see cref="void"/>
-        ///     and have one parameter that is an <see cref="ActionData"/> or a subtype of <see cref="ActionData"/>
-        ///     and calls the method whose parameter is closest to the actual type of the provided <paramref name="actionData"/>.
+        ///     The default implementation maps all public methods that return <see cref="void"/>
+        ///     and have one parameter and calls the method whose parameter is closest to the
+        ///     actual type of the provided <paramref name="action"/>.
         /// </para>
         /// <para>
-        ///     If a method where the actual type of the <paramref name="actionData"/> matches exactly then that method is called,
+        ///     If a method where the actual type of the <paramref name="action"/> matches exactly then that method is called,
         ///     otherwise the method with the most sepcific base class (i.e.: the closest base type in the inheritance chain)
         ///     is called if one can be found.
         /// </para>
@@ -51,8 +51,8 @@ namespace FluxBase
         ///     The search includes methods defined in base <see cref="Store"/>s even if they are private.
         /// </para>
         /// </remarks>
-        protected internal virtual void Handle(ActionData actionData)
-            => _TryFindDispatchHandler(actionData?.GetType() ?? typeof(ActionData))?.Invoke(actionData);
+        public virtual void Handle(object action)
+            => _TryFindDispatchHandler(action?.GetType() ?? typeof(object))?.Invoke(action);
 
         /// <summary>Notifies that a property was changed.</summary>
         /// <param name="propertyName">The name of the property that was changed.</param>
@@ -90,7 +90,7 @@ namespace FluxBase
         ///         }
         ///     }
         /// 
-        ///     protected override void Handle(ActionData actionData)
+        ///     protected override void Handle(Action action)
         ///     {
         ///         Property1++;
         ///     }
@@ -102,7 +102,7 @@ namespace FluxBase
         /// {
         ///     public int Property1 { get; private set; }
         /// 
-        ///     protected override void Handle(ActionData actionData)
+        ///     protected override void Handle(Action action)
         ///     {
         ///         SetProperty(() => Property1, Property1 + 1);
         ///     }
@@ -134,11 +134,11 @@ namespace FluxBase
         }
 #endif
 
-        private Action<ActionData> _TryFindDispatchHandler(Type actionDataType)
+        private Action<object> _TryFindDispatchHandler(Type actionType)
         {
-            Action<ActionData> _bestMatch = null;
+            Action<object> _bestMatch = null;
             int _acceptableMatchPrecision = 0;
-            Action<ActionData> _acceptableMatch = null;
+            Action<object> _acceptableMatch = null;
 
 #if NET20 || NET35
             if (_dispatchHandlers == null)
@@ -149,15 +149,15 @@ namespace FluxBase
 #endif
                 while (dispatchHandlerInfo.MoveNext() && _bestMatch == null)
                 {
-                    if (dispatchHandlerInfo.Current.ParameterType == actionDataType)
+                    if (dispatchHandlerInfo.Current.ParameterType == actionType)
                         _bestMatch = dispatchHandlerInfo.Current.DispatchHandler;
 #if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-                    else if (dispatchHandlerInfo.Current.ParameterType.GetTypeInfo().IsAssignableFrom(actionDataType.GetTypeInfo()))
+                    else if (dispatchHandlerInfo.Current.ParameterType.GetTypeInfo().IsAssignableFrom(actionType.GetTypeInfo()))
 #else
-                    else if (dispatchHandlerInfo.Current.ParameterType.IsAssignableFrom(actionDataType))
+                    else if (dispatchHandlerInfo.Current.ParameterType.IsAssignableFrom(actionType))
 #endif
                     {
-                        var matchPrecision = _GetMatchPrecisionBetween(dispatchHandlerInfo.Current.ParameterType, actionDataType);
+                        var matchPrecision = _GetMatchPrecisionBetween(dispatchHandlerInfo.Current.ParameterType, actionType);
                         if (matchPrecision < _acceptableMatchPrecision || _acceptableMatch == null)
                         {
                             _acceptableMatchPrecision = matchPrecision;
@@ -195,22 +195,17 @@ namespace FluxBase
             while (storeType != typeof(Store))
             {
 #if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-                foreach (var method in storeType.GetTypeInfo().DeclaredMethods)
+                foreach (var method in storeType.GetTypeInfo().DeclaredMethods.Where(method => method.IsPublic))
 #else
-                foreach (var method in storeType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+                foreach (var method in storeType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
 #endif
                     if (method.ReturnType == typeof(void) && !method.IsStatic)
                     {
                         var parameters = method.GetParameters();
                         if (parameters.Length == 1)
                         {
-                            var actionDataType = parameters[0].ParameterType;
-#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
-                            if (typeof(ActionData).GetTypeInfo().IsAssignableFrom(actionDataType.GetTypeInfo()))
-#else
-                            if (typeof(ActionData).IsAssignableFrom(actionDataType))
-#endif
-                                handlerInfos.Add(new DispatchHandlerInfo(actionDataType, _CreateDispatchHandler(method, actionDataType)));
+                            var actionType = parameters[0].ParameterType;
+                            handlerInfos.Add(new DispatchHandlerInfo(actionType, _CreateDispatchHandler(method, actionType)));
                         }
                     }
 #if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
@@ -222,20 +217,19 @@ namespace FluxBase
             return handlerInfos;
         }
 
-        private static Action<ActionData> _CreateHandler<TActionData>(object target, MethodInfo handlerMethodInfo)
-            where TActionData : ActionData
+        private static Action<object> _CreateHandler<TAction>(object target, MethodInfo handlerMethodInfo)
         {
 #if NET20 || NET35 || NET40
-            var concreteHandler = (Action<TActionData>)Delegate.CreateDelegate(typeof(Action<TActionData>), target, handlerMethodInfo);
+            var concreteHandler = (Action<TAction>)Delegate.CreateDelegate(typeof(Action<TAction>), target, handlerMethodInfo);
 #else
-            var concreteHandler = (Action<TActionData>)handlerMethodInfo.CreateDelegate(typeof(Action<TActionData>), target);
+            var concreteHandler = (Action<TAction>)handlerMethodInfo.CreateDelegate(typeof(Action<TAction>), target);
 #endif
-            return actionData => concreteHandler((TActionData)actionData);
+            return action => concreteHandler((TAction)action);
         }
 
         private sealed class DispatchHandlerInfo
         {
-            public DispatchHandlerInfo(Type parameterType, Action<ActionData> dispatchHandler)
+            public DispatchHandlerInfo(Type parameterType, Action<object> dispatchHandler)
             {
                 ParameterType = parameterType;
                 DispatchHandler = dispatchHandler;
@@ -243,18 +237,18 @@ namespace FluxBase
 
             public Type ParameterType { get; }
 
-            public Action<ActionData> DispatchHandler { get; }
+            public Action<object> DispatchHandler { get; }
         }
 
-        private Action<ActionData> _CreateDispatchHandler(MethodInfo dispatchHandlerMethodInfo, Type actionDataType)
+        private Action<object> _CreateDispatchHandler(MethodInfo dispatchHandlerMethodInfo, Type actionType)
         {
 #if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
             var factoryMethod = typeof(Store).GetTypeInfo().GetDeclaredMethods(nameof(_CreateHandler)).Single();
 #else
             var factoryMethod = typeof(Store).GetMethod(nameof(_CreateHandler), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
 #endif
-            var dispatchHandler = (Action<ActionData>)factoryMethod
-                .MakeGenericMethod(actionDataType)
+            var dispatchHandler = (Action<object>)factoryMethod
+                .MakeGenericMethod(actionType)
                 .Invoke(this, new object[] { this, dispatchHandlerMethodInfo });
             return dispatchHandler;
         }

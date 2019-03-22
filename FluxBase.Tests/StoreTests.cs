@@ -15,34 +15,34 @@ namespace FluxBase.Tests
         }
 
         [TestMethod]
-        public void StoreWithMoreSpecificActionDataGetsNotifiedWhenMatchesExactly()
+        public void StoreWithMoreSpecificActionGetsNotifiedWhenMatchesExactly()
         {
-            var store = new MockStore<MockActionData>();
+            var store = new MockStore();
             _Dispatcher.Register(store);
 
-            _Dispatcher.Dispatch(new MockActionData());
+            _Dispatcher.Dispatch(new object());
 
             Assert.AreEqual(1, store.InvocationCount);
         }
 
         [TestMethod]
-        public void StoreWithMoreSpecificActionDataDoesNotGetNotifiedWhenUsingBaseActionData()
+        public void StoreWithMoreSpecificActionDoesNotGetNotifiedWhenUsingBaseAction()
         {
-            var store = new MockStore<MockActionData>();
+            var store = new MockStore<string>();
             _Dispatcher.Register(store);
 
-            _Dispatcher.Dispatch(null);
+            _Dispatcher.Dispatch(new object());
 
             Assert.AreEqual(0, store.InvocationCount);
         }
 
         [TestMethod]
-        public void StoreWithBaseActionDataGetsNotifiedWhenUsingMoreSpecificActionData()
+        public void StoreWithBaseActionGetsNotifiedWhenUsingMoreSpecificAction()
         {
-            var store = new MockStore<ActionData>();
+            var store = new MockStore();
             _Dispatcher.Register(store);
 
-            _Dispatcher.Dispatch(new MockActionData());
+            _Dispatcher.Dispatch(new object());
 
             Assert.AreEqual(1, store.InvocationCount);
         }
@@ -50,9 +50,9 @@ namespace FluxBase.Tests
         [TestMethod]
         public void NonVoidReturningMethodsAreNotRegistered()
         {
-            var store = MockStore<ActionData, int>.Instance;
+            var store = MockStore<object, int>.Instance;
 
-            _Dispatcher.Dispatch(new MockActionData());
+            _Dispatcher.Dispatch(new object());
 
             Assert.AreEqual(0, store.InvocationCount);
         }
