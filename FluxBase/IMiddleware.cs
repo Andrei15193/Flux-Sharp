@@ -1,6 +1,8 @@
 ﻿namespace FluxBase
 {
-    /// <summary>Represents a middleware pipeline for handling actions before and after they are actually dispatched to action handlers.</summary>
+    /// <summary>
+    /// Represents a middleware pipeline element for handling actions before and after they are actually dispatched to action handlers.
+    /// </summary>
     /// <remarks>
     /// <para>
     /// A middleware pipeline can read the action that is currently being dispatched and decide to modify it, skip all the following middleware
@@ -18,7 +20,8 @@
         void Handle(IMiddlewareContext context);
     }
 
-    /// <summary>Represents a middleware pipeline for handling actions before and after they are actually dispatched to action handlers.</summary>
+    /// <summary>Represents a middleware pipeline element for handling actions before and after they are actually dispatched to action handlers.</summary>
+    /// <typeparam name="TAction">The type of action to handle.</typeparam>
     /// <remarks>
     /// <para>
     /// A middleware pipeline can read the action that is currently being dispatched and decide to modify it, skip all the following middleware

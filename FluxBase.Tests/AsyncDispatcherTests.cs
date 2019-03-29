@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -799,6 +800,180 @@ namespace FluxBase.Tests
         {
             var exception = Assert.ThrowsException<ArgumentException>(() => _Dispatcher.WaitFor(new Store[] { null }));
             Assert.AreEqual(new ArgumentException("Cannot contain 'null' stores.", "stores").Message, exception.Message);
+        }
+
+        [TestMethod]
+        public async Task MiddlewareIsBeingCalledBeforeActualDispatch()
+        {
+            var callList = new List<string>();
+
+            _Dispatcher.Register(action => callList.Add("dispatch"));
+            _Dispatcher.Use(
+                new MockAsyncMiddleware(
+                    async (context, cancellationToken) =>
+                    {
+                        callList.Add("middleware-before-1");
+                        await context.NextAsync(cancellationToken);
+                        callList.Add("middleware-after-1");
+                    }
+                )
+            );
+            _Dispatcher.Use(
+                new MockAsyncMiddleware(
+                    async (context, cancellationToken) =>
+                    {
+                        callList.Add("middleware-before-2");
+                        await context.NextAsync(new object(), cancellationToken);
+                        callList.Add("middleware-after-2");
+                    }
+                )
+            );
+            _Dispatcher.Use(
+                new MockAsyncMiddleware(
+                    async (context, cancellationToken) =>
+                    {
+                        await Task.Yield();
+                        callList.Add("middleware-before-3");
+                        context.Dispatch(new object());
+                        callList.Add("middleware-after-3");
+                    }
+                )
+            );
+            _Dispatcher.Use(
+                new MockAsyncMiddleware(
+                    (context, cancellationToken) => throw new InvalidOperationException()
+                )
+            );
+
+            await _Dispatcher.DispatchAsync(null);
+
+            Assert.IsTrue(
+                callList.SequenceEqual(new[]
+                {
+                    "middleware-before-1",
+                    "middleware-before-2",
+                    "middleware-before-3",
+                    "dispatch",
+                    "middleware-after-3",
+                    "middleware-after-2",
+                    "middleware-after-1"
+                }),
+                $"Actual: {string.Join(", ", callList)}"
+            );
+        }
+
+        [TestMethod]
+        public async Task ModifyingTheActionPropagatesToAllFutureMiddleware()
+        {
+            var initialAction = new object();
+            object firstAction = null;
+            object secondAction = null;
+
+            _Dispatcher.Use(
+                new MockAsyncMiddleware(
+                    async (context, cancellationToken) =>
+                    {
+                        firstAction = context.Action;
+                        await context.NextAsync(new object(), cancellationToken);
+                    }
+                )
+            );
+            _Dispatcher.Use(
+                new MockAsyncMiddleware(
+                    (context, cancellationToken) =>
+                    {
+                        secondAction = context.Action;
+                        return Task.FromResult<object>(null);
+                    }
+                )
+            );
+
+            await _Dispatcher.DispatchAsync(initialAction);
+
+            Assert.AreSame(initialAction, firstAction);
+            Assert.AreNotSame(firstAction, secondAction);
+        }
+
+        [TestMethod]
+        public async Task UsingConcreteActionMiddlewareGetsCalledOnlyWhenCompatible()
+        {
+            var callList = new List<string>();
+
+            _Dispatcher.Register(action => callList.Add("dispatch"));
+            _Dispatcher.Use(
+                new MockAsyncMiddleware<int?>(
+                    async (context, cancellationToken) =>
+                    {
+                        callList.Add("middleware-1");
+                        await context.NextAsync(cancellationToken);
+                    }
+                )
+            );
+            _Dispatcher.Use(
+                new MockAsyncMiddleware<object>(
+                    (context, cancellationToken) =>
+                    {
+                        callList.Add("middleware-2");
+                        return context.NextAsync(cancellationToken);
+                    }
+                )
+            );
+            _Dispatcher.Use(
+                new MockAsyncMiddleware<string>(
+                    async (context, cancellationToken) =>
+                    {
+                        callList.Add("middleware-3");
+                        await context.NextAsync(cancellationToken);
+                    }
+                )
+            );
+            _Dispatcher.Use(
+                new MockAsyncMiddleware<int>(
+                    (context, cancellationToken) =>
+                    {
+                        callList.Add("middleware-4");
+                        return context.NextAsync(cancellationToken);
+                    }
+                )
+            );
+
+            await _Dispatcher.DispatchAsync(null);
+            await _Dispatcher.DispatchAsync(string.Empty);
+
+            Assert.IsTrue(
+                callList.SequenceEqual(new[]
+                {
+                    "middleware-1",
+                    "middleware-2",
+                    "middleware-3",
+                    "dispatch",
+                    "middleware-2",
+                    "middleware-3",
+                    "dispatch"
+                }),
+                $"Actual: {string.Join(", ", callList)}"
+            );
+        }
+
+        [TestMethod]
+        public async Task CallingDispatchNextWithInvalidIdThrowsException()
+        {
+            var invalidId = new LinkedList<IAsyncMiddleware>(
+                new[]
+                {
+                    new MockAsyncMiddleware((context, cancellationToken) => context.NextAsync(cancellationToken))
+                }).First;
+
+            var dispatcher = new RevealingAsyncDispatcher();
+
+            var exception = await Assert.ThrowsExceptionAsync<ArgumentException>(() => dispatcher.DispatchNextAsync(invalidId, new object()));
+            Assert.AreEqual(new ArgumentException("The provided id does not correspond to a configured middleware.", "id").Message, exception.Message);
+        }
+
+        private sealed class RevealingAsyncDispatcher : AsyncDispatcher
+        {
+            public Task DispatchNextAsync(object id, object action)
+                => DispatchNextAsync(id, action, CancellationToken.None);
         }
     }
 }
