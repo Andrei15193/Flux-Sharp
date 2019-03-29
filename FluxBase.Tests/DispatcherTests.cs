@@ -1,8 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-using FluxBase.Tests.Mocks;
+﻿using FluxBase.Tests.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 
 namespace FluxBase.Tests
 {
@@ -798,6 +799,171 @@ namespace FluxBase.Tests
         {
             var exception = Assert.ThrowsException<ArgumentException>(() => _Dispatcher.WaitFor(new Store[] { null }));
             Assert.AreEqual(new ArgumentException("Cannot contain 'null' stores.", "stores").Message, exception.Message);
+        }
+
+        [TestMethod]
+        public void MiddlewareIsBeingCalledBeforeActualDispatch()
+        {
+            var callList = new List<string>();
+
+            _Dispatcher.Register(action => callList.Add("dispatch"));
+            _Dispatcher.Use(
+                new MockMiddleware(
+                    context =>
+                    {
+                        callList.Add("middleware-before-1");
+                        context.Next();
+                        callList.Add("middleware-after-1");
+                    }
+                )
+            );
+            _Dispatcher.Use(
+                new MockMiddleware(
+                    context =>
+                    {
+                        callList.Add("middleware-before-2");
+                        context.Next(new object());
+                        callList.Add("middleware-after-2");
+                    }
+                )
+            );
+            _Dispatcher.Use(
+                new MockMiddleware(
+                    context =>
+                    {
+                        callList.Add("middleware-before-3");
+                        context.Dispatch(new object());
+                        callList.Add("middleware-after-3");
+                    }
+                )
+            );
+            _Dispatcher.Use(
+                new MockMiddleware(
+                    context => throw new InvalidOperationException()
+                )
+            );
+
+            _Dispatcher.Dispatch(null);
+
+            Assert.IsTrue(
+                callList.SequenceEqual(new[]
+                {
+                    "middleware-before-1",
+                    "middleware-before-2",
+                    "middleware-before-3",
+                    "dispatch",
+                    "middleware-after-3",
+                    "middleware-after-2",
+                    "middleware-after-1"
+                }),
+                $"Actual: {string.Join(", ", callList)}"
+            );
+        }
+
+        [TestMethod]
+        public void ModifyingTheActionPropagatesToAllFutureMiddleware()
+        {
+            var initialAction = new object();
+            object firstAction = null;
+            object secondAction = null;
+
+            _Dispatcher.Use(
+                new MockMiddleware(
+                    context =>
+                    {
+                        firstAction = context.Action;
+                        context.Next(new object());
+                    }
+                )
+            );
+            _Dispatcher.Use(
+                new MockMiddleware(
+                    context => secondAction = context.Action
+                )
+            );
+
+            _Dispatcher.Dispatch(initialAction);
+
+            Assert.AreSame(initialAction, firstAction);
+            Assert.AreNotSame(firstAction, secondAction);
+        }
+
+        [TestMethod]
+        public void UsingConcreteActionMiddlewareGetsCalledOnlyWhenCompatible()
+        {
+            var callList = new List<string>();
+
+            _Dispatcher.Register(action => callList.Add("dispatch"));
+            _Dispatcher.Use(
+                new MockMiddleware<int?>(
+                    context =>
+                    {
+                        callList.Add("middleware-1");
+                        context.Next();
+                    }
+                )
+            );
+            _Dispatcher.Use(
+                new MockMiddleware<object>(
+                    context =>
+                    {
+                        callList.Add("middleware-2");
+                        context.Next();
+                    }
+                )
+            );
+            _Dispatcher.Use(
+                new MockMiddleware<string>(
+                    context =>
+                    {
+                        callList.Add("middleware-3");
+                        context.Next();
+                    }
+                )
+            );
+            _Dispatcher.Use(
+                new MockMiddleware<int>(
+                    context =>
+                    {
+                        callList.Add("middleware-4");
+                        context.Next();
+                    }
+                )
+            );
+
+            _Dispatcher.Dispatch(null);
+            _Dispatcher.Dispatch(string.Empty);
+
+            Assert.IsTrue(
+                callList.SequenceEqual(new[]
+                {
+                    "middleware-1",
+                    "middleware-2",
+                    "middleware-3",
+                    "dispatch",
+                    "middleware-2",
+                    "middleware-3",
+                    "dispatch"
+                }),
+                $"Actual: {string.Join(", ", callList)}"
+            );
+        }
+
+        [TestMethod]
+        public void CallingDispatchNextWithInvalidIdThrowsException()
+        {
+            var invalidId = new LinkedList<IMiddleware>(new[] { new MockMiddleware(context => context.Next()) }).First;
+
+            var dispatcher = new RevealingDispatcher();
+
+            var exception = Assert.ThrowsException<ArgumentException>(() => dispatcher.DispatchNext(invalidId, new object()));
+            Assert.AreEqual(new ArgumentException("The provided id does not correspond to a configured middleware.", "id").Message, exception.Message);
+        }
+
+        private sealed class RevealingDispatcher : Dispatcher
+        {
+            new public void DispatchNext(object id, object action)
+                => base.DispatchNext(id, action);
         }
     }
 }
