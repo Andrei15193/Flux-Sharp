@@ -1,14 +1,14 @@
-﻿#if !NET20 && !NET35
+﻿#if !NET20 && !NET30 && !NET35
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace FluxBase
 {
-    internal class AsyncMiddlewareContextAdapter<TAction> : IAsyncMiddlewareContext<TAction>
+    internal class MiddlewareAsyncContextAdapter<TAction> : IMiddlewareAsyncContext<TAction>
     {
-        private readonly IAsyncMiddlewareContext _context;
+        private readonly IMiddlewareAsyncContext _context;
 
-        public AsyncMiddlewareContextAdapter(IAsyncMiddlewareContext context)
+        public MiddlewareAsyncContextAdapter(IMiddlewareAsyncContext context)
         {
             _context = context;
         }
@@ -16,7 +16,7 @@ namespace FluxBase
         public TAction Action
             => (TAction)_context.Action;
 
-        object IAsyncMiddlewareContext.Action
+        object IMiddlewareAsyncContext.Action
             => _context.Action;
 
         public Task NextAsync(object action, CancellationToken cancellationToken)

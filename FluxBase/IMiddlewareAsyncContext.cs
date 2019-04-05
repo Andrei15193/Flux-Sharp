@@ -1,11 +1,11 @@
-﻿#if !NET20 && !NET35
+﻿#if !NET20 && !NET30 && !NET35
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace FluxBase
 {
     /// <summary>Represents the middleware context when handling an asynchronous action dispatch.</summary>
-    public interface IAsyncMiddlewareContext
+    public interface IMiddlewareAsyncContext
     {
         /// <summary>Gets the action that is being dispatched.</summary>
         object Action { get; }
@@ -30,7 +30,7 @@ namespace FluxBase
 
     /// <summary>Represents a typed middleware context when handling an asynchronous action dispatch.</summary>
     /// <typeparam name="TAction">The type of the action.</typeparam>
-    public interface IAsyncMiddlewareContext<TAction> : IAsyncMiddlewareContext
+    public interface IMiddlewareAsyncContext<TAction> : IMiddlewareAsyncContext
     {
         /// <summary>Gets the action that is being dispatched.</summary>
         new TAction Action { get; }

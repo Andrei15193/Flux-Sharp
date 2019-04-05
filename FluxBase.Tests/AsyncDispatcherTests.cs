@@ -11,12 +11,12 @@ namespace FluxBase.Tests
     [TestClass]
     public class AsyncDispatcherTests
     {
-        private AsyncDispatcher _Dispatcher { get; set; }
+        private Dispatcher _Dispatcher { get; set; }
 
         [TestInitialize]
         public void TestInitialize()
         {
-            _Dispatcher = new AsyncDispatcher();
+            _Dispatcher = new Dispatcher();
         }
 
         [TestMethod]
@@ -809,7 +809,7 @@ namespace FluxBase.Tests
 
             _Dispatcher.Register(action => callList.Add("dispatch"));
             _Dispatcher.Use(
-                new MockAsyncMiddleware(
+                new MockMiddleware(
                     async (context, cancellationToken) =>
                     {
                         callList.Add("middleware-before-1");
@@ -819,7 +819,7 @@ namespace FluxBase.Tests
                 )
             );
             _Dispatcher.Use(
-                new MockAsyncMiddleware(
+                new MockMiddleware(
                     async (context, cancellationToken) =>
                     {
                         callList.Add("middleware-before-2");
@@ -829,7 +829,7 @@ namespace FluxBase.Tests
                 )
             );
             _Dispatcher.Use(
-                new MockAsyncMiddleware(
+                new MockMiddleware(
                     async (context, cancellationToken) =>
                     {
                         await Task.Yield();
@@ -840,7 +840,7 @@ namespace FluxBase.Tests
                 )
             );
             _Dispatcher.Use(
-                new MockAsyncMiddleware(
+                new MockMiddleware(
                     (context, cancellationToken) => throw new InvalidOperationException()
                 )
             );
@@ -870,7 +870,7 @@ namespace FluxBase.Tests
             object secondAction = null;
 
             _Dispatcher.Use(
-                new MockAsyncMiddleware(
+                new MockMiddleware(
                     async (context, cancellationToken) =>
                     {
                         firstAction = context.Action;
@@ -879,7 +879,7 @@ namespace FluxBase.Tests
                 )
             );
             _Dispatcher.Use(
-                new MockAsyncMiddleware(
+                new MockMiddleware(
                     (context, cancellationToken) =>
                     {
                         secondAction = context.Action;
@@ -901,7 +901,7 @@ namespace FluxBase.Tests
 
             _Dispatcher.Register(action => callList.Add("dispatch"));
             _Dispatcher.Use(
-                new MockAsyncMiddleware<int?>(
+                new MockMiddleware<int?>(
                     async (context, cancellationToken) =>
                     {
                         callList.Add("middleware-1");
@@ -910,7 +910,7 @@ namespace FluxBase.Tests
                 )
             );
             _Dispatcher.Use(
-                new MockAsyncMiddleware<object>(
+                new MockMiddleware<object>(
                     (context, cancellationToken) =>
                     {
                         callList.Add("middleware-2");
@@ -919,7 +919,7 @@ namespace FluxBase.Tests
                 )
             );
             _Dispatcher.Use(
-                new MockAsyncMiddleware<string>(
+                new MockMiddleware<string>(
                     async (context, cancellationToken) =>
                     {
                         callList.Add("middleware-3");
@@ -928,7 +928,7 @@ namespace FluxBase.Tests
                 )
             );
             _Dispatcher.Use(
-                new MockAsyncMiddleware<int>(
+                new MockMiddleware<int>(
                     (context, cancellationToken) =>
                     {
                         callList.Add("middleware-4");
@@ -953,27 +953,6 @@ namespace FluxBase.Tests
                 }),
                 $"Actual: {string.Join(", ", callList)}"
             );
-        }
-
-        [TestMethod]
-        public async Task CallingDispatchNextWithInvalidIdThrowsException()
-        {
-            var invalidId = new LinkedList<IAsyncMiddleware>(
-                new[]
-                {
-                    new MockAsyncMiddleware((context, cancellationToken) => context.NextAsync(cancellationToken))
-                }).First;
-
-            var dispatcher = new RevealingAsyncDispatcher();
-
-            var exception = await Assert.ThrowsExceptionAsync<ArgumentException>(() => dispatcher.DispatchNextAsync(invalidId, new object()));
-            Assert.AreEqual(new ArgumentException("The provided id does not correspond to a configured middleware.", "id").Message, exception.Message);
-        }
-
-        private sealed class RevealingAsyncDispatcher : AsyncDispatcher
-        {
-            public Task DispatchNextAsync(object id, object action)
-                => DispatchNextAsync(id, action, CancellationToken.None);
         }
     }
 }

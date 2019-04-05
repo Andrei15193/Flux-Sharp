@@ -948,22 +948,5 @@ namespace FluxBase.Tests
                 $"Actual: {string.Join(", ", callList)}"
             );
         }
-
-        [TestMethod]
-        public void CallingDispatchNextWithInvalidIdThrowsException()
-        {
-            var invalidId = new LinkedList<IMiddleware>(new[] { new MockMiddleware(context => context.Next()) }).First;
-
-            var dispatcher = new RevealingDispatcher();
-
-            var exception = Assert.ThrowsException<ArgumentException>(() => dispatcher.DispatchNext(invalidId, new object()));
-            Assert.AreEqual(new ArgumentException("The provided id does not correspond to a configured middleware.", "id").Message, exception.Message);
-        }
-
-        private sealed class RevealingDispatcher : Dispatcher
-        {
-            new public void DispatchNext(object id, object action)
-                => base.DispatchNext(id, action);
-        }
     }
 }

@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 #if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
 using System.Linq;
 #endif
-#if !NET20
+#if !NET20 && !NET30
 using System.Linq.Expressions;
 #endif
 
@@ -15,7 +15,7 @@ namespace FluxBase
     /// <summary>Represents a store, responsible with managing application view state.</summary>
     public abstract class Store : INotifyPropertyChanged
     {
-#if NET20 || NET35
+#if NET20 || NET30 || NET35
         private volatile IEnumerable<DispatchHandlerInfo> _dispatchHandlers;
 #else
         private readonly Lazy<IEnumerable<DispatchHandlerInfo>> _dispatchHandlers;
@@ -24,7 +24,7 @@ namespace FluxBase
         /// <summary>Initializes a new instance of the <see cref="Store"/> class.</summary>
         protected Store()
         {
-#if NET20 || NET35
+#if NET20 || NET30 || NET35
             _dispatchHandlers = null;
 #else
             _dispatchHandlers = new Lazy<IEnumerable<DispatchHandlerInfo>>(_GetHandlerInfos);
@@ -56,7 +56,7 @@ namespace FluxBase
 
         /// <summary>Notifies that a property was changed.</summary>
         /// <param name="propertyName">The name of the property that was changed.</param>
-#if !NET20 && !NET35 && !NET40
+#if !NET20 && !NET30 && !NET35 && !NET40
         protected void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 #else
@@ -64,7 +64,7 @@ namespace FluxBase
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 #endif
 
-#if !NET20
+#if !NET20 && !NET30
         /// <summary>Dynamically updates a property and notifies observers about the change.</summary>
         /// <typeparam name="TProperty">The type of the property that was changed.</typeparam>
         /// <param name="property">The property to update.</param>
@@ -140,7 +140,7 @@ namespace FluxBase
             int _acceptableMatchPrecision = 0;
             Action<object> _acceptableMatch = null;
 
-#if NET20 || NET35
+#if NET20 || NET30 || NET35
             if (_dispatchHandlers == null)
                 _dispatchHandlers = _GetHandlerInfos();
             using (var dispatchHandlerInfo = _dispatchHandlers.GetEnumerator())
@@ -219,7 +219,7 @@ namespace FluxBase
 
         private static Action<object> _CreateHandler<TAction>(object target, MethodInfo handlerMethodInfo)
         {
-#if NET20 || NET35 || NET40
+#if NET20 || NET30 || NET35 || NET40
             var concreteHandler = (Action<TAction>)Delegate.CreateDelegate(typeof(Action<TAction>), target, handlerMethodInfo);
 #else
             var concreteHandler = (Action<TAction>)handlerMethodInfo.CreateDelegate(typeof(Action<TAction>), target);
