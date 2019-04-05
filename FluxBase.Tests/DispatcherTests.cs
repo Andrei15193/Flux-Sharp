@@ -12,8 +12,8 @@ namespace FluxBase.Tests
     public class DispatcherTests
     {
         [TestMethod]
-        public Task RegisteringToDispatcherInvokesCallback()
-            => _AssertAsync(
+        public async Task RegisteringToDispatcherInvokesCallback()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     var invocationCount = 0;
@@ -29,8 +29,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task RegisteringStoreToDispatcherInvokesHandler()
-            => _AssertAsync(
+        public async Task RegisteringStoreToDispatcherInvokesHandler()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     var invocationCount = 0;
@@ -47,8 +47,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task RegisteringToDispatcherTwiceInvokesCallbackOnce()
-            => _AssertAsync(
+        public async Task RegisteringToDispatcherTwiceInvokesCallbackOnce()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     var invocationCount = 0;
@@ -66,8 +66,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task RegisteringStoreTwiceToDispatcherInvokesHandlerOnce()
-            => _AssertAsync(
+        public async Task RegisteringStoreTwiceToDispatcherInvokesHandlerOnce()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     var invocationCount = 0;
@@ -86,8 +86,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task UnregisteringFromDispatcherNoLongerInvokesCallback()
-            => _AssertAsync(
+        public async Task UnregisteringFromDispatcherNoLongerInvokesCallback()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     var invocationCount = 0;
@@ -104,8 +104,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task UnregisteringStoreFromDispatcherNoLongerInvokesHandler()
-            => _AssertAsync(
+        public async Task UnregisteringStoreFromDispatcherNoLongerInvokesHandler()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     var invocationCount = 0;
@@ -123,43 +123,39 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task UnregisteringTwiceFromDispatcherReturnsFalseTheSecondTime()
-            => _AssertAsync(
-                async (dispatch, testDispatcher) =>
-                {
-                    await Task.Yield();
-                    var invocationCount = 0;
+        public void UnregisteringTwiceFromDispatcherReturnsFalseTheSecondTime()
+        {
+            var testDispatcher = new Dispatcher();
 
-                    var registrationId = testDispatcher.Register(
-                        action => Interlocked.Increment(ref invocationCount)
-                    );
-                    Assert.IsTrue(testDispatcher.Unregister(registrationId));
+            var invocationCount = 0;
 
-                    Assert.IsFalse(testDispatcher.Unregister(registrationId));
-                }
+            var registrationId = testDispatcher.Register(
+                action => Interlocked.Increment(ref invocationCount)
             );
+            Assert.IsTrue(testDispatcher.Unregister(registrationId));
+
+            Assert.IsFalse(testDispatcher.Unregister(registrationId));
+        }
 
         [TestMethod]
-        public Task UnregisteringStoreTwiceFromDispatcherReturnsFalseTheSecondTime()
-            => _AssertAsync(
-                async (dispatch, testDispatcher) =>
-                {
-                    await Task.Yield();
-                    var invocationCount = 0;
-                    var store = new MockDelegateStore(
-                        action => Interlocked.Increment(ref invocationCount)
-                    );
+        public void UnregisteringStoreTwiceFromDispatcherReturnsFalseTheSecondTime()
+        {
+            var testDispatcher = new Dispatcher();
 
-                    var registrationId = testDispatcher.Register(store);
-
-                    Assert.IsTrue(testDispatcher.Unregister(store));
-                    Assert.IsFalse(testDispatcher.Unregister(store));
-                }
+            var invocationCount = 0;
+            var store = new MockDelegateStore(
+                action => Interlocked.Increment(ref invocationCount)
             );
 
+            var registrationId = testDispatcher.Register(store);
+
+            Assert.IsTrue(testDispatcher.Unregister(store));
+            Assert.IsFalse(testDispatcher.Unregister(store));
+        }
+
         [TestMethod]
-        public Task DispatchingNullPassesNull()
-            => _AssertAsync(
+        public async Task DispatchingNullPassesNull()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     object actualAction = null;
@@ -175,8 +171,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task DispatchPassesSameAction()
-            => _AssertAsync(
+        public async Task DispatchPassesSameAction()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     var expectedAction = new object();
@@ -193,8 +189,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitForBlocksUntilAwaitedHandlerCompletes()
-            => _AssertAsync(
+        public async Task WaitForBlocksUntilAwaitedHandlerCompletes()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const string first = "first";
@@ -222,8 +218,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitForBlocksUntilHandlersThatThemselvesWaitAwaitsTheirCompletion()
-            => _AssertAsync(
+        public async Task WaitForBlocksUntilHandlersThatThemselvesWaitAwaitsTheirCompletion()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const int chainedHandlersCount = 500;
@@ -260,8 +256,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitForCausingDeadlockIsDetected()
-            => _AssertAsync(
+        public async Task WaitForCausingDeadlockIsDetected()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     object firstSubscriptionId = null;
@@ -283,8 +279,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitForCausingDeadlockThroughChainedBlocksIsDetected()
-            => _AssertAsync(
+        public async Task WaitForCausingDeadlockThroughChainedBlocksIsDetected()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const int chainedHandlersCount = 500;
@@ -310,8 +306,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitForBlocksUntilAwaitedHandlerCompletesWithTwoSeparateDependencyChains()
-            => _AssertAsync(
+        public async Task WaitForBlocksUntilAwaitedHandlerCompletesWithTwoSeparateDependencyChains()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const string first = "first";
@@ -354,8 +350,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitForDoesNotBlockIfHandlerWasAlreadyExecuted()
-            => _AssertAsync(
+        public async Task WaitForDoesNotBlockIfHandlerWasAlreadyExecuted()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const string first = "first";
@@ -382,8 +378,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitForDoesNotBlockIfHandlerWasUnregistered()
-            => _AssertAsync(
+        public async Task WaitForDoesNotBlockIfHandlerWasUnregistered()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const string first = "first";
@@ -410,8 +406,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitForStoreBlocksUntilAwaitedHandlerCompletes()
-            => _AssertAsync(
+        public async Task WaitForStoreBlocksUntilAwaitedHandlerCompletes()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const string first = "first";
@@ -443,8 +439,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitForStoreBlocksUntilHandlersThatThemselvesWaitAwaitsTheirCompletion()
-            => _AssertAsync(
+        public async Task WaitForStoreBlocksUntilHandlersThatThemselvesWaitAwaitsTheirCompletion()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const int chainedHandlersCount = 500;
@@ -485,8 +481,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitForStoreCausingDeadlockIsDetected()
-            => _AssertAsync(
+        public async Task WaitForStoreCausingDeadlockIsDetected()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     object firstSubscriptionId = null;
@@ -512,8 +508,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitForStoreCausingDeadlockThroughChainedBlocksIsDetected()
-            => _AssertAsync(
+        public async Task WaitForStoreCausingDeadlockThroughChainedBlocksIsDetected()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const int chainedHandlersCount = 500;
@@ -541,8 +537,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitForStoreBlocksUntilAwaitedHandlerCompletesWithTwoSeparateDependencyChains()
-            => _AssertAsync(
+        public async Task WaitForStoreBlocksUntilAwaitedHandlerCompletesWithTwoSeparateDependencyChains()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const string first = "first";
@@ -593,8 +589,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitForStoreDoesNotBlockIfHandlerWasAlreadyExecuted()
-            => _AssertAsync(
+        public async Task WaitForStoreDoesNotBlockIfHandlerWasAlreadyExecuted()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const string first = "first";
@@ -625,8 +621,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitForStoreDoesNotBlockIfHandlerWasUnregistered()
-            => _AssertAsync(
+        public async Task WaitForStoreDoesNotBlockIfHandlerWasUnregistered()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const string first = "first";
@@ -657,8 +653,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task HandlerWaitingForStoreBlocksUntilAwaitedStoreCompletes()
-            => _AssertAsync(
+        public async Task HandlerWaitingForStoreBlocksUntilAwaitedStoreCompletes()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const string first = "first";
@@ -686,8 +682,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task StoreWaitingForHandlerBlocksUntilAwaitedHandlerCompletes()
-            => _AssertAsync(
+        public async Task StoreWaitingForHandlerBlocksUntilAwaitedHandlerCompletes()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const string first = "first";
@@ -719,8 +715,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitingForMultipleIdsWaitsUntilEachCompletes()
-            => _AssertAsync(
+        public async Task WaitingForMultipleIdsWaitsUntilEachCompletes()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const string first = "first";
@@ -754,8 +750,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task WaitingForMultipleStoresWaitsUntilEachCompletes()
-            => _AssertAsync(
+        public async Task WaitingForMultipleStoresWaitsUntilEachCompletes()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     const string first = "first";
@@ -793,8 +789,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task IsDispatchingIsUpdatedWhileNotifyingSubscribers()
-            => _AssertAsync(
+        public async Task IsDispatchingIsUpdatedWhileNotifyingSubscribers()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     Assert.IsFalse(testDispatcher.IsDispatching);
@@ -810,8 +806,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task IsDispatchingIsSetToFalseEvenIfAHandlerThrowsExcetpion()
-            => _AssertAsync(
+        public async Task IsDispatchingIsSetToFalseEvenIfAHandlerThrowsExcetpion()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     Assert.IsFalse(testDispatcher.IsDispatching);
@@ -827,118 +823,98 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task RegisteringNullCallbackThrowsException()
-            => _AssertAsync(
-                async (dispatch, testDispatcher) =>
-                {
-                    await Task.Yield();
-                    var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.Register(callback: null));
-                    Assert.AreEqual(new ArgumentNullException("callback").Message, exception.Message);
-                }
-            );
+        public void RegisteringNullCallbackThrowsException()
+        {
+            var testDispatcher = new Dispatcher();
+
+            var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.Register(callback: null));
+            Assert.AreEqual(new ArgumentNullException("callback").Message, exception.Message);
+        }
 
         [TestMethod]
-        public Task RegisteringNullStoreThrowsException()
-            => _AssertAsync(
-                async (dispatch, testDispatcher) =>
-                {
-                    await Task.Yield();
-                    var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.Register(store: null));
-                    Assert.AreEqual(new ArgumentNullException("store").Message, exception.Message);
-                }
-            );
+        public void RegisteringNullStoreThrowsException()
+        {
+            var testDispatcher = new Dispatcher();
+
+            var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.Register(store: null));
+            Assert.AreEqual(new ArgumentNullException("store").Message, exception.Message);
+        }
 
         [TestMethod]
-        public Task UnregisteringNullIdThrowsException()
-            => _AssertAsync(
-                async (dispatch, testDispatcher) =>
-                {
-                    await Task.Yield();
-                    var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.Unregister(id: null));
-                    Assert.AreEqual(new ArgumentNullException("id").Message, exception.Message);
-                }
-            );
+        public void UnregisteringNullIdThrowsException()
+        {
+            var testDispatcher = new Dispatcher();
+
+            var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.Unregister(id: null));
+            Assert.AreEqual(new ArgumentNullException("id").Message, exception.Message);
+        }
 
         [TestMethod]
-        public Task UnregisteringNullStoreThrowsException()
-            => _AssertAsync(
-                async (dispatch, testDispatcher) =>
-                {
-                    await Task.Yield();
-                    var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.Unregister(store: null));
-                    Assert.AreEqual(new ArgumentNullException("store").Message, exception.Message);
-                }
-            );
+        public void UnregisteringNullStoreThrowsException()
+        {
+            var testDispatcher = new Dispatcher();
+
+            var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.Unregister(store: null));
+            Assert.AreEqual(new ArgumentNullException("store").Message, exception.Message);
+        }
 
         [TestMethod]
-        public Task WaitForNullThrowsException()
-            => _AssertAsync(
-                async (dispatch, testDispatcher) =>
-                {
-                    await Task.Yield();
-                    var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.WaitFor(id: null));
-                    Assert.AreEqual(new ArgumentNullException("id").Message, exception.Message);
-                }
-            );
+        public void WaitForNullThrowsException()
+        {
+            var testDispatcher = new Dispatcher();
+
+            var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.WaitFor(id: null));
+            Assert.AreEqual(new ArgumentNullException("id").Message, exception.Message);
+        }
 
         [TestMethod]
-        public Task WaitForNullStoreThrowsException()
-            => _AssertAsync(
-                async (dispatch, testDispatcher) =>
-                {
-                    await Task.Yield();
-                    var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.WaitFor(store: null));
-                    Assert.AreEqual(new ArgumentNullException("store").Message, exception.Message);
-                }
-            );
+        public void WaitForNullStoreThrowsException()
+        {
+            var testDispatcher = new Dispatcher();
+
+            var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.WaitFor(store: null));
+            Assert.AreEqual(new ArgumentNullException("store").Message, exception.Message);
+        }
 
         [TestMethod]
-        public Task WaitForMultipleIdsWithNullCollectionThrowsException()
-            => _AssertAsync(
-                async (dispatch, testDispatcher) =>
-                {
-                    await Task.Yield();
-                    var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.WaitFor(ids: null));
-                    Assert.AreEqual(new ArgumentNullException("ids").Message, exception.Message);
-                }
-            );
+        public void WaitForMultipleIdsWithNullCollectionThrowsException()
+        {
+            var testDispatcher = new Dispatcher();
+
+            var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.WaitFor(ids: null));
+            Assert.AreEqual(new ArgumentNullException("ids").Message, exception.Message);
+        }
 
         [TestMethod]
-        public Task WaitForMultipleIdsContainingNullValuesThrowsException()
-            => _AssertAsync(
-                async (dispatch, testDispatcher) =>
-                {
-                    await Task.Yield();
-                    var exception = Assert.ThrowsException<ArgumentException>(() => testDispatcher.WaitFor(new object[] { null }));
-                    Assert.AreEqual(new ArgumentException("Cannot contain 'null' ids.", "ids").Message, exception.Message);
-                }
-            );
+        public void WaitForMultipleIdsContainingNullValuesThrowsException()
+        {
+            var testDispatcher = new Dispatcher();
+
+            var exception = Assert.ThrowsException<ArgumentException>(() => testDispatcher.WaitFor(new object[] { null }));
+            Assert.AreEqual(new ArgumentException("Cannot contain 'null' ids.", "ids").Message, exception.Message);
+        }
 
         [TestMethod]
-        public Task WaitForMultipleStoresWithNullCollectionThrowsException()
-            => _AssertAsync(
-                async (dispatch, testDispatcher) =>
-                {
-                    await Task.Yield();
-                    var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.WaitFor(stores: null));
-                    Assert.AreEqual(new ArgumentNullException("stores").Message, exception.Message);
-                }
-            );
+        public void WaitForMultipleStoresWithNullCollectionThrowsException()
+        {
+            var testDispatcher = new Dispatcher();
+
+            var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.WaitFor(stores: null));
+            Assert.AreEqual(new ArgumentNullException("stores").Message, exception.Message);
+        }
 
         [TestMethod]
-        public Task WaitForMultipleStoresContainingNullValuesThrowsException()
-            => _AssertAsync(
-                async (dispatch, testDispatcher) =>
-                {
-                    await Task.Yield();
-                    var exception = Assert.ThrowsException<ArgumentException>(() => testDispatcher.WaitFor(new Store[] { null }));
-                    Assert.AreEqual(new ArgumentException("Cannot contain 'null' stores.", "stores").Message, exception.Message);
-                }
-            );
+        public void WaitForMultipleStoresContainingNullValuesThrowsException()
+        {
+            var testDispatcher = new Dispatcher();
+
+            var exception = Assert.ThrowsException<ArgumentException>(() => testDispatcher.WaitFor(new Store[] { null }));
+            Assert.AreEqual(new ArgumentException("Cannot contain 'null' stores.", "stores").Message, exception.Message);
+        }
 
         [TestMethod]
-        public Task MiddlewareIsBeingCalledBeforeActualDispatch()
-            => _AssertAsync(
+        public async Task MiddlewareIsBeingCalledBeforeActualDispatch()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     var callList = new List<string>();
@@ -951,6 +927,12 @@ namespace FluxBase.Tests
                                 callList.Add("middleware-before-1");
                                 context.Next();
                                 callList.Add("middleware-after-1");
+                            },
+                            async (context, cancellationToken) =>
+                            {
+                                callList.Add("middleware-before-1");
+                                await context.NextAsync(cancellationToken);
+                                callList.Add("middleware-after-1");
                             }
                         )
                     );
@@ -960,6 +942,12 @@ namespace FluxBase.Tests
                             {
                                 callList.Add("middleware-before-2");
                                 context.Next(new object());
+                                callList.Add("middleware-after-2");
+                            },
+                            async (context, cancellationToken) =>
+                            {
+                                callList.Add("middleware-before-2");
+                                await context.NextAsync(new object(), cancellationToken);
                                 callList.Add("middleware-after-2");
                             }
                         )
@@ -971,12 +959,21 @@ namespace FluxBase.Tests
                                 callList.Add("middleware-before-3");
                                 context.Dispatch(new object());
                                 callList.Add("middleware-after-3");
+                            },
+                            (context, cancellationToken) =>
+                            {
+                                callList.Add("middleware-before-3");
+                                context.Dispatch(new object());
+                                callList.Add("middleware-after-3");
+
+                                return Task.FromResult<object>(null);
                             }
                         )
                     );
                     testDispatcher.Use(
                         new MockMiddleware(
-                            context => throw new InvalidOperationException()
+                            context => throw new InvalidOperationException(),
+                            (context, cancellationToken) => throw new InvalidOperationException()
                         )
                     );
 
@@ -999,8 +996,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task ModifyingTheActionPropagatesToAllFutureMiddleware()
-            => _AssertAsync(
+        public async Task ModifyingTheActionPropagatesToAllFutureMiddleware()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     var initialAction = new object();
@@ -1013,12 +1010,23 @@ namespace FluxBase.Tests
                             {
                                 firstAction = context.Action;
                                 context.Next(new object());
+                            },
+                            async (context, cancellationToken) =>
+                            {
+                                firstAction = context.Action;
+                                await context.NextAsync(new object(), cancellationToken);
                             }
                         )
                     );
                     testDispatcher.Use(
                         new MockMiddleware(
-                            context => secondAction = context.Action
+                            context => secondAction = context.Action,
+                            (context, cancellationToken) =>
+                            {
+                                secondAction = context.Action;
+
+                                return Task.FromResult<object>(null);
+                            }
                         )
                     );
 
@@ -1030,8 +1038,8 @@ namespace FluxBase.Tests
             );
 
         [TestMethod]
-        public Task UsingConcreteActionMiddlewareGetsCalledOnlyWhenCompatible()
-            => _AssertAsync(
+        public async Task UsingConcreteActionMiddlewareGetsCalledOnlyWhenCompatible()
+            => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
                 {
                     var callList = new List<string>();
@@ -1043,6 +1051,11 @@ namespace FluxBase.Tests
                             {
                                 callList.Add("middleware-1");
                                 context.Next();
+                            },
+                            async (context, cancellationToken) =>
+                            {
+                                callList.Add("middleware-1");
+                                await context.NextAsync(cancellationToken);
                             }
                         )
                     );
@@ -1052,6 +1065,11 @@ namespace FluxBase.Tests
                             {
                                 callList.Add("middleware-2");
                                 context.Next();
+                            },
+                            async (context, cancellationToken) =>
+                            {
+                                callList.Add("middleware-2");
+                                await context.NextAsync(cancellationToken);
                             }
                         )
                     );
@@ -1061,6 +1079,11 @@ namespace FluxBase.Tests
                             {
                                 callList.Add("middleware-3");
                                 context.Next();
+                            },
+                            async (context, cancellationToken) =>
+                            {
+                                callList.Add("middleware-3");
+                                await context.NextAsync(cancellationToken);
                             }
                         )
                     );
@@ -1070,6 +1093,11 @@ namespace FluxBase.Tests
                             {
                                 callList.Add("middleware-4");
                                 context.Next();
+                            },
+                            async (context, cancellationToken) =>
+                            {
+                                callList.Add("middleware-4");
+                                await context.NextAsync(cancellationToken);
                             }
                         )
                     );
@@ -1099,31 +1127,29 @@ namespace FluxBase.Tests
             await callback(
                 action =>
                 {
-                    syncDispatcher.Dispatch(action);
+                    ((Dispatcher)syncDispatcher).Dispatch(action);
                     return Task.FromResult<object>(null);
                 },
                 syncDispatcher
             );
 
             var asyncDispatcher = new TestDispatcher();
-            await callback(asyncDispatcher.DispatchAsync, asyncDispatcher);
+            await callback(((Dispatcher)asyncDispatcher).DispatchAsync, asyncDispatcher);
         }
 
         private sealed class TestDispatcher : Dispatcher
         {
+            [Obsolete("Use the provided 'dispatch' callback to dispatch actions.", true)]
             public new void Dispatch(object action)
-            {
-                throw new InvalidOperationException("Use the provided 'dispatch' callback to dispatch actions.");
-            }
+                => base.Dispatch(action);
 
+            [Obsolete("Use the provided 'dispatch' callback to dispatch actions.", true)]
             public new Task DispatchAsync(object action)
-                => DispatchAsync(action, CancellationToken.None);
+                => base.DispatchAsync(action);
 
+            [Obsolete("Use the provided 'dispatch' callback to dispatch actions.", true)]
             public new Task DispatchAsync(object action, CancellationToken cancellationToken)
-            {
-                Dispatch(action);
-                return Task.FromResult<object>(null);
-            }
+                => base.DispatchAsync(action, cancellationToken);
         }
     }
 }

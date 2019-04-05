@@ -9,15 +9,9 @@ namespace FluxBase.Tests.Mocks
         private readonly Action<IMiddlewareContext> _handler;
         private readonly Func<IMiddlewareAsyncContext, CancellationToken, Task> _asyncHandler;
 
-        public MockMiddleware(Action<IMiddlewareContext> handler)
+        public MockMiddleware(Action<IMiddlewareContext> handler, Func<IMiddlewareAsyncContext, CancellationToken, Task> asyncHandler)
         {
             _handler = handler;
-            _asyncHandler = delegate { throw new Exception(); };
-        }
-
-        public MockMiddleware(Func<IMiddlewareAsyncContext, CancellationToken, Task> asyncHandler)
-        {
-            _handler = delegate { throw new Exception(); };
             _asyncHandler = asyncHandler;
         }
 
@@ -33,15 +27,9 @@ namespace FluxBase.Tests.Mocks
         private readonly Action<IMiddlewareContext<TAction>> _handler;
         private readonly Func<IMiddlewareAsyncContext<TAction>, CancellationToken, Task> _asyncHandler;
 
-        public MockMiddleware(Action<IMiddlewareContext<TAction>> handler)
+        public MockMiddleware(Action<IMiddlewareContext<TAction>> handler, Func<IMiddlewareAsyncContext<TAction>, CancellationToken, Task> asyncHandler)
         {
             _handler = handler;
-            _asyncHandler = delegate { throw new Exception(); };
-        }
-
-        public MockMiddleware(Func<IMiddlewareAsyncContext<TAction>, CancellationToken, Task> asyncHandler)
-        {
-            _handler = delegate { throw new Exception(); };
             _asyncHandler = asyncHandler;
         }
 
