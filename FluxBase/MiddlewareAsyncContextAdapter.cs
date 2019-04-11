@@ -24,9 +24,6 @@ namespace FluxBase
 
         public Task NextAsync(CancellationToken cancellationToken)
             => _context.NextAsync(cancellationToken);
-
-        public void Dispatch(object action)
-            => _context.Dispatch(action);
     }
 }
 #endif

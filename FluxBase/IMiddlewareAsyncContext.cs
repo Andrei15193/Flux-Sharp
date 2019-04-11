@@ -22,10 +22,6 @@ namespace FluxBase
         /// <returns>Returns a <see cref="Task"/> representing the asynchronous operation.</returns>
         /// <remarks>In case there is no next middleware handler configured then the <see cref="Action"/> will be dispatched to all registered action handlers (stores).</remarks>
         Task NextAsync(CancellationToken cancellationToken);
-
-        /// <summary>Dispatches the given <paramref name="action"/> to all registered action handlers (stores).</summary>
-        /// <param name="action">The action to dispatch.</param>
-        void Dispatch(object action);
     }
 
     /// <summary>Represents a typed middleware context when handling an asynchronous action dispatch.</summary>

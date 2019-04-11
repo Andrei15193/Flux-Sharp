@@ -952,30 +952,6 @@ namespace FluxBase.Tests
                             }
                         )
                     );
-                    testDispatcher.Use(
-                        new MockMiddleware(
-                            context =>
-                            {
-                                callList.Add("middleware-before-3");
-                                context.Dispatch(new object());
-                                callList.Add("middleware-after-3");
-                            },
-                            (context, cancellationToken) =>
-                            {
-                                callList.Add("middleware-before-3");
-                                context.Dispatch(new object());
-                                callList.Add("middleware-after-3");
-
-                                return Task.FromResult<object>(null);
-                            }
-                        )
-                    );
-                    testDispatcher.Use(
-                        new MockMiddleware(
-                            context => throw new InvalidOperationException(),
-                            (context, cancellationToken) => throw new InvalidOperationException()
-                        )
-                    );
 
                     await dispatch(null);
 
@@ -984,9 +960,7 @@ namespace FluxBase.Tests
                         {
                             "middleware-before-1",
                             "middleware-before-2",
-                            "middleware-before-3",
                             "dispatch",
-                            "middleware-after-3",
                             "middleware-after-2",
                             "middleware-after-1"
                         }),

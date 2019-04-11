@@ -20,8 +20,5 @@
 
         public void Next()
             => _context.Next();
-
-        public void Dispatch(object action)
-            => _context.Dispatch(action);
     }
 }

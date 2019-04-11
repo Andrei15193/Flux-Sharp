@@ -14,10 +14,6 @@
         /// <summary>Calls the next middleware in the chain with the same <see cref="Action"/>.</summary>
         /// <remarks>In case there is no next middleware handler configured then the <see cref="Action"/> will be dispatched to all registered action handlers (stores).</remarks>
         void Next();
-
-        /// <summary>Dispatches the given <paramref name="action"/> to all registered action handlers (stores).</summary>
-        /// <param name="action">The action to dispatch.</param>
-        void Dispatch(object action);
     }
 
     /// <summary>Represents a typed middleware context when handling an action dispatch.</summary>
