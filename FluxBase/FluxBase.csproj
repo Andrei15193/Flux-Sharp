@@ -18,7 +18,7 @@
     <PackageReleaseNotes>Added middleware (similar to Redux middleware).
 Added asynchronous dispatch flow.
 Updated store action handler lookup, only public methods with one parameter and no result are mapped as handlers by default.
-Removed ActionData as base class for dispatched action, any object can be used as an action now.</PackageReleaseNotes>
+Removed ActionData as base class for actions, any object can be used as an action now.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
