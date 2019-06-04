@@ -1,0 +1,56 @@
+---
+# Front matter comment to ensure Jekyll properly reads file.
+---
+
+$font-size-base: 1rem !default;
+$h1-font-size: $font-size-base * 2 !default;
+$h2-font-size: $font-size-base * 1.5 !default;
+$h3-font-size: $font-size-base * 1.25 !default;
+$h4-font-size: $font-size-base * 1 !default;
+$h5-font-size: $font-size-base * 0.75 !default;
+$h6-font-size: $font-size-base * 0.5 !default;
+
+@import 'bootstrap-4-3-1/bootstrap';
+@import 'pygments/monokai';
+
+.highlight {
+  border-radius: $border-radius;
+}
+
+pre.highlight {
+  padding: map-get($spacers, 2);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.content a {
+  word-break: break-all;
+}
+
+.rounded-top-0 {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.content p {
+  text-align: justify;
+}
+
+.flex-fill {
+  flex: 1 1 auto;
+}
+
+@each $size, $length in $spacers {
+  @if $size != 0 {
+    .with-item-spacing-#{$size} {
+      margin-right: $length;
+      &:last-of-type {
+        margin-right: 0;
+      }
+    }
+  }
+}

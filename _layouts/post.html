@@ -1,0 +1,40 @@
+
+{% assign filter = "post.url > '"| append: page.url| append: "'" %}
+{% assign current_page = site.posts | where_exp: "post", filter | size | divided_by: site.paginate | plus: 1 %}
+
+{% capture post %}
+<div>
+    <h2>{{page.title}}</h2>
+    <p>
+        <em>
+            <small>
+                Posted on {{ page.date | date_to_long_string: "ordinal" }}{% if page.author %},
+                by <a href="https://github.com/{{ post.author }}">{{ page.author }}</a>{% endif %}
+            </small>
+        </em>
+    </p>
+    <hr>
+    {{content}}
+    <hr>
+    <div class="text-center">
+        {% if page.next %}
+        <a href="{{site.url}}/{{site.github.repository_name}}{{page.next.url}}">Next</a>
+        {% else %}
+        Next
+        {% endif %}
+        |
+        <a
+            href="{{site.url}}/{{site.github.repository_name}}/blog{% if current_page > 1 %}/pages/{{current_page}}{% endif %}">
+            Current Page
+        </a>
+        |
+        {% if page.previous %}
+        <a href="{{site.url}}/{{site.github.repository_name}}{{page.previous.url}}">Previous</a>
+        {% else %}
+        Previous
+        {% endif %}
+    </div>
+</div>
+{% endcapture %}
+
+{% include layout.html content=post index_link_label="Home" %}

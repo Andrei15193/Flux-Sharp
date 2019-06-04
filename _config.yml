@@ -1,0 +1,12 @@
+paginate: 5
+paginate_path: "/blog/pages/:num/"
+excerpt_separator: "<!-- more -->"
+permalink: /blog/posts/:year/:month/:day/:title
+defaults:
+  -
+    scope:
+      path: "v1.0"
+    values:
+      layout: "releases-version-1"
+plugins:
+  - jekyll-paginate

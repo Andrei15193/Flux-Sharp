@@ -1,0 +1,109 @@
+{% assign post_count = site.posts | size %}
+<!DOCTYPE html>
+<html lang="{{ site.lang | default: "en-GB" }}" class="h-100">
+
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,maximum-scale=2">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <link rel="stylesheet" type="text/css" media="screen"
+        href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+    {% seo %}
+</head>
+
+<body class="h-100 d-flex flex-column">
+    <header class="px-4 pb-3 bg-dark text-white">
+        <div class="d-none d-sm-block text-right">
+            {% if include.index_link_label %}
+            <a class="btn btn-primary btn-sm rounded-top-0" href="{{site.url}}/{{site.github.repository_name}}/">
+                {{ include.index_link_label }}
+            </a>
+            {% endif %}
+            {% if post_count > 0 %}
+            <a class="btn btn-primary btn-sm rounded-top-0" href="{{site.url}}/{{site.github.repository_name}}/blog">
+                Blog
+            </a>
+            {% endif %}
+            {% if site.github.is_project_page %}
+            <a class="btn btn-primary btn-sm rounded-top-0" href="{{ site.github.repository_url }}">
+                View on GitHub
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="d-block d-sm-none text-right">
+            {% if include.index_link_label %}
+            <a class="text-light" href="{{site.url}}/{{site.github.repository_name}}/">
+                <u>{{ include.index_link_label }}</u>
+            </a>
+            {% if site.github.is_project_page %}
+            |
+            {% endif %}
+            {% endif %}
+            {% if post_count > 0 %}
+            <a class="text-light" href="{{site.url}}/{{site.github.repository_name}}/blog">
+                <u>Blog</u>
+            </a>
+            {% if site.github.is_project_page %}
+            |
+            {% endif %}
+            {% endif %}
+            {% if site.github.is_project_page %}
+            <a class="text-light" href="{{ site.github.repository_url }}">
+                <u>View on GitHub</u>
+            </a>
+            {% endif %}
+        </div>
+
+        <h1>{{ site.title | default: site.github.repository_name }}</h1>
+        <h2 class="d-none d-sm-block">
+            <small>{{ site.description | default: site.github.project_tagline }}</small>
+        </h2>
+    </header>
+
+    <section class="content px-4 py-3 flex-fill">
+        {{ include.content }}
+    </section>
+
+    {% if site.github.is_project_page %}
+    <footer class="px-4 pt-3 bg-dark text-white">
+        <p class="text-center">
+            <a class="text-light" href="{{ site.github.repository_url }}">
+                <u>{{ site.title | default: site.github.repository_name }}</u>
+            </a>
+            maintained by
+            <a class="text-light" href="{{ site.github.owner_url }}">
+                <u>{{ site.github.owner_name }}</u>
+            </a>
+        </p>
+    </footer>
+    {% endif %}
+
+    {% if site.google_analytics %}
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date(); a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+        ga('create', '{{ site.google_analytics }}', 'auto');
+        ga('send', 'pageview');
+    </script>
+    {% endif %}
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

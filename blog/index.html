@@ -1,0 +1,70 @@
+---
+title: Blog
+---
+
+{% assign page_range_offset = 2 %}
+{% assign lower_page_range = paginator.page | minus: page_range_offset %}
+{% assign upper_page_range = paginator.page | plus: page_range_offset %}
+
+{% capture posts %}
+{% if paginator.total_pages > 0 %}
+<h2>This is our blog, <small>find out what we have been up to...</small></h2>
+<hr>
+{% for post in paginator.posts %}
+<h3>
+    <a href="{{site.url}}/{{site.github.repository_name}}{{ post.url }}">{{ post.title }}</a>
+</h3>
+{{ post.excerpt }}
+<div class="d-flex flex-row justify-content-between align-items-center">
+    <p class="text-left">
+        <em>
+            <small>
+                <a href="{{site.url}}/{{site.github.repository_name}}{{ post.url }}">Read more...</a>
+            </small>
+        </em>
+    </p>
+    <p class="text-right">
+        <em>
+            <small class="d-none d-sm-inline">
+                Posted on {{ post.date | date_to_long_string: "ordinal" }}{% if post.author %},
+                by <a href="https://github.com/{{ post.author }}">{{ post.author }}</a>{% endif %}
+            </small>
+            <small class="d-inline d-sm-none">
+                Posted on {{ post.date | date_to_long_string: "ordinal" }}{% if post.author %}<br>
+                by <a href="https://github.com/{{ post.author }}">{{ post.author }}</a>{% endif %}
+            </small>
+        </em>
+    </p>
+</div>
+<hr>
+{% endfor %}
+<nav>
+    <ul class="m-0 pagination pagination-sm justify-content-center">
+        <li class="page-item {% if paginator.page == 1 %}disabled{% endif %}">
+            <a class="page-link" href="{{site.url}}/{{site.github.repository_name}}/blog">First</a>
+        </li>
+        {% for page in (lower_page_range..upper_page_range) %}
+        {% if 1 <= page and page <= paginator.total_pages %}
+        <li class="page-item {% if page == paginator.page %}active{% endif %}">
+            <a class="page-link"
+                href="{{site.url}}/{{site.github.repository_name}}/blog{% if page > 1 %}/pages/{{page}}{% endif %}">
+                {{page}}
+            </a>
+        </li>
+        {% endif %}
+        {% endfor %}
+        <li class="page-item {% if paginator.page == paginator.total_pages %}disabled{% endif %}">
+            <a class="page-link"
+                href="{{site.url}}/{{site.github.repository_name}}/blog{% if paginator.total_pages > 1 %}/pages/{{paginator.total_pages}}{% endif %}">
+                Last
+            </a>
+        </li>
+    </ul>
+</nav>
+{% else %}
+<h2 class="text-center mt-3">There are no posts!</h2>
+<p class="text-center">Plase check again later, the first post will be ready soon :)</p>
+{% endif %}
+{% endcapture %}
+
+{% include layout.html content=posts index_link_label="Home" %}
