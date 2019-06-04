@@ -38,17 +38,15 @@ namespace FluxBase
         /// <param name="action">The action that was dispatched.</param>
         /// <remarks>
         /// <para>
-        ///     The default implementation maps all public methods that return <see cref="void"/>
-        ///     and have one parameter and calls the method whose parameter is closest to the
-        ///     actual type of the provided <paramref name="action"/>.
+        ///     The default implementation maps all public methods with one parameter that return
+        ///     <see cref="void"/> and picks the method whose parameter is closest to the actual
+        ///     type of the provided <paramref name="action"/>.
         /// </para>
         /// <para>
-        ///     If a method where the actual type of the <paramref name="action"/> matches exactly then that method is called,
-        ///     otherwise the method with the most sepcific base class (i.e.: the closest base type in the inheritance chain)
-        ///     is called if one can be found.
-        /// </para>
-        /// <para>
-        ///     The search includes methods defined in base <see cref="Store"/>s even if they are private.
+        ///     If there is a method accepting the same actual type of the provided <paramref name="action"/>
+        ///     then that method is called, otherwise the method with the most sepcific base class (i.e.:
+        ///     the closest base type in the inheritance chain) is called,
+        ///     if one can be found.
         /// </para>
         /// </remarks>
         public virtual void Handle(object action)
