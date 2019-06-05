@@ -10,6 +10,8 @@ TBC
 Previous Releases
 -----------------
 * [Release 1 (FluxBegin)](release-1/)
+    * [Version 1.0.0](https://www.nuget.org/packages/FluxBase/1.0.0)
+    * [Version 1.0.1](https://www.nuget.org/packages/FluxBase/1.0.1)
 
 Introduction
 ------------
