@@ -11,7 +11,7 @@ namespace FluxBase.Tests.Mocks
             _callback = callback;
         }
 
-        protected override void Handle(ActionData actionData)
+        public override void Handle(ActionData actionData)
             => _callback(actionData);
     }
 }

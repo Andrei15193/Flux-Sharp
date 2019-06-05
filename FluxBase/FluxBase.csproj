@@ -16,7 +16,8 @@
     <PackageTags>flux architecture user interface ui</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/Andrei15193/FluxBase/master/package_logo.png</PackageIconUrl>
     <PackageReleaseNotes>Added Dispatcher, can subscribe both handlers and stores to receive dispatched messages. Handlers can wait for other handlers to complete using the WaitFor method.
-Added Store, base class for stores that aims to reduce boilerplate code for notifying observers upon property changes.</PackageReleaseNotes>
+Added Store, base class for stores that aims to reduce boilerplate code for notifying observers upon property changes.
+(Bugfix) Updated store action handler lookup, only public methods with one parameter and no result are mapped as handlers by default.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>

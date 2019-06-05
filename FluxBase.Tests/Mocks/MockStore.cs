@@ -15,7 +15,7 @@ namespace FluxBase.Tests.Mocks
         {
         }
 
-        private TResult _Handle(ActionData actionData)
+        public TResult HandleActionData(ActionData actionData)
         {
             Interlocked.Increment(ref _invocationCount);
             return default(TResult);
@@ -33,7 +33,7 @@ namespace FluxBase.Tests.Mocks
         {
         }
 
-        private void _Handle(TActionData actionData)
+        public void HandleActionData(TActionData actionData)
             => Interlocked.Increment(ref _invocationCount);
     }
 

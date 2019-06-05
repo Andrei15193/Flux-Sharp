@@ -38,7 +38,7 @@ namespace FluxBase
         /// <param name="actionData">The <see cref="ActionData"/> that was dispatched.</param>
         /// <remarks>
         /// <para>
-        ///     The default implementation maps all methods (public and private alike) that return <see cref="void"/>
+        ///     The default implementation maps all public methods that return <see cref="void"/>
         ///     and have one parameter that is an <see cref="ActionData"/> or a subtype of <see cref="ActionData"/>
         ///     and calls the method whose parameter is closest to the actual type of the provided <paramref name="actionData"/>.
         /// </para>
@@ -47,11 +47,8 @@ namespace FluxBase
         ///     otherwise the method with the most sepcific base class (i.e.: the closest base type in the inheritance chain)
         ///     is called if one can be found.
         /// </para>
-        /// <para>
-        ///     The search includes methods defined in base <see cref="Store"/>s even if they are private.
-        /// </para>
         /// </remarks>
-        protected internal virtual void Handle(ActionData actionData)
+        public virtual void Handle(ActionData actionData)
             => _TryFindDispatchHandler(actionData?.GetType() ?? typeof(ActionData))?.Invoke(actionData);
 
         /// <summary>Notifies that a property was changed.</summary>
@@ -197,7 +194,7 @@ namespace FluxBase
 #if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
                 foreach (var method in storeType.GetTypeInfo().DeclaredMethods)
 #else
-                foreach (var method in storeType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly))
+                foreach (var method in storeType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
 #endif
                     if (method.ReturnType == typeof(void) && !method.IsStatic)
                     {
@@ -208,7 +205,13 @@ namespace FluxBase
 #if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
                             if (typeof(ActionData).GetTypeInfo().IsAssignableFrom(actionDataType.GetTypeInfo()))
 #else
-                            if (typeof(ActionData).IsAssignableFrom(actionDataType))
+                            if (
+#if NETCOREAPP1_0 || NETCOREAPP1_1
+                                actionDataType.GetTypeInfo().IsPublic
+#else
+                                actionDataType.IsPublic
+#endif
+                                && typeof(ActionData).IsAssignableFrom(actionDataType))
 #endif
                                 handlerInfos.Add(new DispatchHandlerInfo(actionDataType, _CreateDispatchHandler(method, actionDataType)));
                         }

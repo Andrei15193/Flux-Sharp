@@ -1,6 +1,6 @@
 ﻿namespace FluxBase.Tests.Mocks
 {
-    internal class MockActionData : ActionData
+    public class MockActionData : ActionData
     {
     }
 }
