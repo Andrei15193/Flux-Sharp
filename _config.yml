@@ -5,7 +5,7 @@ permalink: /blog/posts/:year/:month/:day/:title
 defaults:
   -
     scope:
-      path: "v1.0"
+      path: "release-1"
     values:
       layout: "releases-version-1"
 plugins:

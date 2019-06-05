@@ -7,9 +7,9 @@ FluxBase Namespace
 
 TBC
 
-Previous Versions
+Previous Releases
 -----------------
-* [Version 1.0 (FluxBegin)](v1.0/)
+* [Release 1 (FluxBegin)](release-1/)
 
 Introduction
 ------------
