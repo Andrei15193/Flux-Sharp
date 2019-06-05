@@ -8,7 +8,7 @@
     <Description>Provides core types and functionality to implement applications using Flux architecture with .NET.</Description>
     <Authors>Andrei Fangli</Authors>
     <Copyright>Andrei Fangli</Copyright>
-    <PackageProjectUrl>https://github.com/Andrei15193/FluxBase</PackageProjectUrl>
+    <PackageProjectUrl>https://andrei15193.github.io/FluxBase/</PackageProjectUrl>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Andrei15193/FluxBase.git</RepositoryUrl>
