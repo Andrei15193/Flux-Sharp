@@ -1,3 +1,5 @@
+lang: en-GB
+google_analytics: UA-52692274-5
 paginate: 5
 paginate_path: "/blog/pages/:num/"
 excerpt_separator: "<!-- more -->"

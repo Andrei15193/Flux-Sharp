@@ -1,5 +1,5 @@
 ---
-title: Home
+title: FluxBase
 ---
 
 FluxBase Namespace
