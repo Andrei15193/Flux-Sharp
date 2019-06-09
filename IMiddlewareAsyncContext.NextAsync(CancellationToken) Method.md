@@ -17,6 +17,8 @@ Returns a [Task](https://docs.microsoft.com/dotnet/api/system.threading.tasks.ta
 ### Remarks
 In case there is no next middleware handler configured then the [Action](IMiddlewareAsyncContext.Action Property) will be dispatched to all registered action handlers (stores).
 
+This method is not available for .NET Framework 2.0, .NET Framework 3.0 and .NET Framework 3.5 builds.
+
 ### See Also
 * [FluxBase](index)
 * [IMiddlewareAsyncContext](IMiddlewareAsyncContext Interface)

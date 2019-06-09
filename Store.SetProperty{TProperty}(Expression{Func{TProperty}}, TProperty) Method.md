@@ -23,9 +23,7 @@ The new value to set to the property.
 * __[ArgumentException](https://docs.microsoft.com/dotnet/api/system.argumentexception)__ - Thrown when _property_ does not resolve to a property of the current instance.
 
 ### Remarks
-This method simplifies stores by removing the boilerplate code for writing properties that notify
-observers upon change. Using this method the store class can have less clutter. Without using this
-method the store would look something like this:
+This method simplifies stores by removing the boilerplate code for writing properties that notify observers upon change. Using this method the store class can have less clutter. Without using this method the store would look something like this:
 
 ```c#
 public class MyStore : Store
@@ -42,7 +40,7 @@ public class MyStore : Store
         }
     }
 
-    protected override void Handle(ActionData actionData)
+    protected override void Handle(Action action)
     {
         Property1++;
     }
@@ -56,7 +54,7 @@ public class MyStore : Store
 {
     public int Property1 { get; private set; }
 
-    protected override void Handle(ActionData actionData)
+    protected override void Handle(Action action)
     {
         SetProperty(() => Property1, Property1 + 1);
     }

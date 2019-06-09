@@ -12,6 +12,7 @@ FluxBase Namespace
 * __[IMiddlewareContext\<TAction\>](IMiddlewareContext{TAction} Interface)__ - Represents a typed middleware context when handling an action dispatch.
 * __[IMiddlewareAsyncContext\<TAction\>](IMiddlewareAsyncContext{TAction} Interface)__ - Represents a typed middleware context when handling an asynchronous action dispatch.
 * __[Dispatcher](Dispatcher Class)__ - Represents a dispatcher, responsible for dispatching actions to subscribers (stores). Follows the publish-subscribe pattern.
+* __[Store](Store Class)__ - Represents a store, responsible with managing application view state.
 
 Previous Releases
 -----------------

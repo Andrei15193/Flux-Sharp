@@ -17,6 +17,9 @@ public interface IMiddlewareAsyncContext<TAction> : IMiddlewareAsyncContext
 ### Properties
 * __[Action](IMiddlewareAsyncContext{TAction}.Action Property)__ - Gets the action that is being dispatched.
 
+### Remarks
+This type is not available for .NET Framework 2.0, .NET Framework 3.0 and .NET Framework 3.5 builds.
+
 # See Also
 * [FluxBase](index)
 * [IMiddlewareContext](IMiddlewareContext Interface)
