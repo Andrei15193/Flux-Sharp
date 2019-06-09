@@ -1,5 +1,5 @@
-ActionData Class
-----------------
+[FluxBase](index) / ActionData Class
+------------------------------------
 
 Represents data that is dispatched from an action.
 

@@ -1,5 +1,5 @@
-Dispatcher.IsDispatching Property
----------------------------------
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / IsDispatching Property
+---------------------------------------------------------------------------
 
 Indicates whether the dispatcher is currently dispatching a message.
 

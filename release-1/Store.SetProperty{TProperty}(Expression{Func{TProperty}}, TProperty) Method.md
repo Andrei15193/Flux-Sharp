@@ -1,5 +1,5 @@
-Store.SetProperty<TProperty>(Expression<Func<TProperty>>, TProperty) Method
----------------------------------------------------------------------------
+[FluxBase](index) / [Store](Store Class) / SetProperty\<TProperty\>(Expression\<Func\<TProperty\>\>, TProperty) Method
+----------------------------------------------------------------------------------------------------------------------
 
 Dynamically updates a property and notifies observers about the change.
 
@@ -13,9 +13,9 @@ protected void SetProperty<TProperty>(Expression<Func<TProperty>> property, TPro
 * __TProperty__ The type of the property that was changed.
 
 ### Parameters
-* __property__ [Expression](https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression-1)\<[Func](https://docs.microsoft.com/dotnet/api/system.func-1)\<TProperty\>\>\
+* __property__ [Expression](https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression-1)\<[Func](https://docs.microsoft.com/dotnet/api/system.func-1)\<TProperty\>\>  
 The property to update.
-* __value__ TProperty\
+* __value__ TProperty  
 The new value to set to the property.
 
 ### Exceptions

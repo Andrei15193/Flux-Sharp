@@ -1,5 +1,5 @@
-Dispatcher.Unregister(object) Method
-------------------------------------
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / Unregister(object) Method
+------------------------------------------------------------------------------
 
 Unregisters the callback with the provided _id_ from notifications.
 
@@ -10,7 +10,7 @@ public bool Unregister(object id)
 ```
 
 ### Parameters
-* __id__ [object](https://docs.microsoft.com/dotnet/api/system.object)
+* __id__ [object](https://docs.microsoft.com/dotnet/api/system.object)  
 The ID object previously returned from calling the [Register(Action\<ActionData\>)](Dispatcher.Register(Action{ActionData}) Method) method.
 
 ### Returns [bool](https://docs.microsoft.com/dotnet/api/system.boolean)

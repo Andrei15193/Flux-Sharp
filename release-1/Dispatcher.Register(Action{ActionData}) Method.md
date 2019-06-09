@@ -1,5 +1,5 @@
-Dispatcher.Register(Action<ActionData>) Method
-----------------------------------------------
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / Register(Action\<ActionData\>) Method
+---------------------------------------------------------------------------------------------------
 
 Registers the provided _callback_ for notifications. A callback may only be registered once.
 
@@ -10,7 +10,7 @@ public object Register(Action<ActionData> callback)
 ```
 
 ### Parameters
-* __callback__ [Action](https://docs.microsoft.com/dotnet/api/system.action-1)\<[ActionData](ActionData Class)\>\
+* __callback__ [Action](https://docs.microsoft.com/dotnet/api/system.action-1)\<[ActionData](ActionData Class)\>  
 The callback that will handle messages published by the dispatcher.
 
 ### Returns [object](https://docs.microsoft.com/dotnet/api/system.object)

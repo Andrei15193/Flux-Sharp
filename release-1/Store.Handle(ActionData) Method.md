@@ -1,5 +1,5 @@
-Store.Handle(ActionData) Method
--------------------------------
+[FluxBase](index) / [Store](Store Class) / Handle(ActionData) Method
+--------------------------------------------------------------------
 
 Handles the provided _actionData_.
 
@@ -10,7 +10,7 @@ protected virtual void Handle(ActionData actionData)
 ```
 
 ### Parameters
-* __actionData__ [ActionData](ActionData Class)\
+* __actionData__ [ActionData](ActionData Class)  
 The [ActionData](ActionData Class) that was dispatched.
 
 ### Remarks

@@ -1,5 +1,5 @@
-Dispatcher.WaitFor(Store[]) Method
-----------------------------------
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / WaitFor(Store[]) Method
+----------------------------------------------------------------------------
 
 Waits for the provided _store_ to complete.
 
@@ -10,7 +10,7 @@ public void WaitFor(params Store[] stores)
 ```
 
 ### Parameters
-* __store__ [Store](Store Class)\[\]\
+* __store__ [Store](Store Class)\[\]  
 A collection of [Store](Store Class)s previously subscribed using the [Register(Store)](Dispatcher.Register(Store) Method) method.
 
 ### Exceptions

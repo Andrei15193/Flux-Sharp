@@ -1,5 +1,5 @@
-ActionData Constructor
-----------------------
+[FluxBase](index) / [ActionData](ActionData Class) / ActionData() Constructor
+-----------------------------------------------------------------------------
 
 Initializes a new instance of the [ActionData](ActionData Class) class.
 

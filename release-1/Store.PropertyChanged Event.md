@@ -1,5 +1,5 @@
-Store.PropertyChanged Event
----------------------------
+[FluxBase](index) / [Store](Store Class) / PropertyChanged Event
+----------------------------------------------------------------
 
 Occurs when a property value changes.
 

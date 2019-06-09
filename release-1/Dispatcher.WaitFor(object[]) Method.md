@@ -1,5 +1,5 @@
-Dispatcher.WaitFor(object[]) Method
------------------------------------
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / WaitFor(object[]) Method
+-----------------------------------------------------------------------------
 
 Waits for the registered handlers with the provided _ids_ to complete.
 
@@ -10,7 +10,7 @@ public void WaitFor(params object[] ids)
 ```
 
 ### Parameters
-* __ids__ [object](https://docs.microsoft.com/dotnet/api/system.object)\[\]\
+* __ids__ [object](https://docs.microsoft.com/dotnet/api/system.object)\[\]  
 A collection of ID objects previously returned from calling the [Register(Action\<ActionData\>)](Dispatcher.Register(Action{ActionData}) Method) method.
 
 ### Exceptions

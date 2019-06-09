@@ -1,5 +1,5 @@
-Dispatcher.Register(Store) Method
----------------------------------
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / Register(Store) Method
+---------------------------------------------------------------------------
 
 Registers the provided _store_ for notifications. A [Store](Store Class) may only be registered once.
 
@@ -10,7 +10,7 @@ public object Register(Store store)
 ```
 
 ### Parameters
-* __store__ [Store](Store Class)\
+* __store__ [Store](Store Class)  
 The [Store](Store Class) to register.
 
 ### Returns [object](https://docs.microsoft.com/dotnet/api/system.object)

@@ -1,5 +1,5 @@
-Dispatcher Constructor
-----------------------
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / Dispatcher() Constructor
+-----------------------------------------------------------------------------
 
 Initializes a new instance of the [Dispatcher](Dispatcher Class) class.
 

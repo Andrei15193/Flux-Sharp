@@ -1,5 +1,5 @@
-Store Constructor
------------------
+[FluxBase](index) / [Store](Store Class) / Store() Constructor
+--------------------------------------------------------------
 
 Initializes a new instance of the [Store](Store Class) class.
 

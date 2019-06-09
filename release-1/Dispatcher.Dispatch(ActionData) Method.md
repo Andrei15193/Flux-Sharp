@@ -1,5 +1,5 @@
-Dispatcher.Dispatch(ActionData) Method
---------------------------------------
+[FluxBase](index) / [Dispatcher](Dispatcher Class) /  Dispatch(ActionData) Method
+---------------------------------------------------------------------------------
 
 Publishes a message to all subscribed callbacks.
 
@@ -10,7 +10,7 @@ public void Dispatch(ActionData actionData)
 ```
 
 ### Parameters
-* __actionData__ [ActionData](ActionData Class)\
+* __actionData__ [ActionData](ActionData Class)  
 The message to dispatch.
 
 ### Exceptions

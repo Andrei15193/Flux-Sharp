@@ -1,9 +1,9 @@
-Store Class
------------
+[FluxBase](index) / Store Class
+-------------------------------
 
 Represents a store, responsible with managing application view state.
 
-Base type: [object](https://docs.microsoft.com/dotnet/api/system.object).\
+Base type: [object](https://docs.microsoft.com/dotnet/api/system.object).  
 Implemented interfaces: [INotifyPropertyChanged](https://docs.microsoft.com/dotnet/api/system.componentmodel.inotifypropertychanged).
 
 This is a [public](https://docs.microsoft.com/dotnet/csharp/language-reference/keywords/public) [abstract](https://docs.microsoft.com/dotnet/csharp/language-reference/keywords/abstract) class.

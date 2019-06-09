@@ -1,5 +1,5 @@
-Dispatcher.WaitFor(IEnumerable<Store>) Method
----------------------------------------------
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / WaitFor(IEnumerable\<Store\>) Method
+-----------------------------------------------------------------------------------------
 
 Waits for the provided _store_ to complete.
 
@@ -10,7 +10,7 @@ public void WaitFor(IEnumerable<Store> stores)
 ```
 
 ### Parameters
-* __store__ [IEnumerable](https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1)\<[Store](Store Class)\>\
+* __store__ [IEnumerable](https://docs.microsoft.com/dotnet/api/system.collections.generic.ienumerable-1)\<[Store](Store Class)\>  
 A collection of [Store](Store Class)s previously subscribed using the [Register(Store)](Dispatcher.Register(Store) Method) method.
 
 ### Exceptions
