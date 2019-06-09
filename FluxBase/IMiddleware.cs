@@ -65,7 +65,7 @@ namespace FluxBase
     /// It cannot be done since all code needs to execute on the UI thread by default.
     /// </para>
     /// <para>
-    /// The asynchronous overflow is not available for .NET Framework 2.0, .NET Framework 3.0 and .NET Framework 3.5 builds.
+    /// The asynchronous flow is not available for .NET Framework 2.0, .NET Framework 3.0 and .NET Framework 3.5 builds.
     /// </para>
     /// </remarks>
     public interface IMiddleware
@@ -142,7 +142,7 @@ namespace FluxBase
     /// It cannot be done since all code needs to execute on the UI thread by default.
     /// </para>
     /// <para>
-    /// The asynchronous overflow is not available for .NET Framework 2.0, .NET Framework 3.0 and .NET Framework 3.5 builds.
+    /// The asynchronous flow is not available for .NET Framework 2.0, .NET Framework 3.0 and .NET Framework 3.5 builds.
     /// </para>
     /// </remarks>
     public interface IMiddleware<TAction>
