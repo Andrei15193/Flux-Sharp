@@ -42,7 +42,7 @@ namespace FluxBase
         }
 
         /// <summary>Configures the given <paramref name="middleware"/> as the last handler in the pipeline.</summary>
-        /// <typeparam name="TAction">The action type for which the middleware applies.</typeparam>
+        /// <typeparam name="TAction">The type of actions for which the middleware applies.</typeparam>
         /// <param name="middleware">The <see cref="IMiddleware{TAction}"/> to configure.</param>
         /// <returns>Returns the ID of the configured <paramref name="middleware"/>.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="middleware"/> is <c>null</c>.</exception>

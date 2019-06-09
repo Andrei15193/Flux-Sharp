@@ -25,7 +25,7 @@ namespace FluxBase
     }
 
     /// <summary>Represents a typed middleware context when handling an asynchronous action dispatch.</summary>
-    /// <typeparam name="TAction">The type of the action.</typeparam>
+    /// <typeparam name="TAction">The type of actions being handled.</typeparam>
     public interface IMiddlewareAsyncContext<TAction> : IMiddlewareAsyncContext
     {
         /// <summary>Gets the action that is being dispatched.</summary>

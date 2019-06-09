@@ -17,7 +17,7 @@
     }
 
     /// <summary>Represents a typed middleware context when handling an action dispatch.</summary>
-    /// <typeparam name="TAction">The type of the action.</typeparam>
+    /// <typeparam name="TAction">The type of actions being handled.</typeparam>
     public interface IMiddlewareContext<TAction> : IMiddlewareContext
     {
         /// <summary>Gets the action that is being dispatched.</summary>
