@@ -6,7 +6,11 @@ FluxBase Namespace
 ------------------
 * __[IDispatcher](IDispatcher Interface)__ - Represents an interface for dispatching actions.
 * __[IMiddleware](IMiddleware Interface)__ - Represents a middleware pipeline element for handling actions before and after they are actually dispatched to action handlers.
+* __[IMiddlewareContext](IMiddlewareContext Interface)__ - Represents the middleware context when handling an action dispatch.
+* __[IMiddlewareAsyncContext](IMiddlewareAsyncContext Interface)__ - Represents the middleware context when handling an asynchronous action dispatch.
 * __[IMiddleware\<TAction\>](IMiddleware{TAction} Interface)__ - Represents a middleware pipeline element for handling actions before and after they are actually dispatched to action handlers.
+* __[IMiddlewareContext\<TAction\>](IMiddlewareContext{TAction} Interface)__ - Represents a typed middleware context when handling an action dispatch.
+* __[IMiddlewareAsyncContext\<TAction\>](IMiddlewareAsyncContext{TAction} Interface)__ - Represents a typed middleware context when handling an asynchronous action dispatch.
 * __[Dispatcher](Dispatcher Class)__ - Represents a dispatcher, responsible for dispatching actions to subscribers (stores). Follows the publish-subscribe pattern.
 
 Previous Releases

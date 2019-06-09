@@ -1,7 +1,7 @@
 [FluxBase](index) / IMiddleware\<TAction\> Interface
 ----------------------------------------------------
 
-Represents a middleware pipeline element for handling actions before and after they are actually dispatched to action handlers.
+Represents a typed middleware pipeline element for handling specific actions before and after they are actually dispatched to action handlers.
 
 This is a [public](https://docs.microsoft.com/dotnet/csharp/language-reference/keywords/public) interface.
 
