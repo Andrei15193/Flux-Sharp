@@ -859,6 +859,24 @@ namespace FluxBase.Tests
         }
 
         [TestMethod]
+        public void ConfiguringNullMiddlewareThrowsException()
+        {
+            var testDispatcher = new Dispatcher();
+
+            var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.Use(middleware: null));
+            Assert.AreEqual(new ArgumentNullException("middleware").Message, exception.Message);
+        }
+
+        [TestMethod]
+        public void ConfiguringTypedNullMiddlewareThrowsException()
+        {
+            var testDispatcher = new Dispatcher();
+
+            var exception = Assert.ThrowsException<ArgumentNullException>(() => testDispatcher.Use<object>(middleware: null));
+            Assert.AreEqual(new ArgumentNullException("middleware").Message, exception.Message);
+        }
+
+        [TestMethod]
         public void WaitForNullThrowsException()
         {
             var testDispatcher = new Dispatcher();

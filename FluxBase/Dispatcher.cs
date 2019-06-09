@@ -27,57 +27,47 @@ namespace FluxBase
 
         /// <summary>Configures the given <paramref name="middleware"/> as the last handler in the pipeline.</summary>
         /// <param name="middleware">The <see cref="IMiddleware"/> to configure.</param>
-        /// <returns>Returns the ID of the configured middleware.</returns>
+        /// <returns>Returns the ID of the configured <paramref name="middleware"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="middleware"/> is <c>null</c>.</exception>
         /// <remarks>
         /// The middleware pipeline is called in the same order they are configured, configuring a middleware handler
         /// multiple times will not reorder it. The respective instance will be called multiple times.
         /// </remarks>
         public object Use(IMiddleware middleware)
-            => _middlewarePipeline.AddLast(middleware);
-
-        /// <summary>Configures the given <paramref name="middleware"/> as the last handler in the pipeline.</summary>
-        /// <param name="middleware">The <see cref="IMiddleware"/> to configure.</param>
-        /// <remarks>
-        /// The middleware pipeline is called in the same order they are configured, configuring a middleware handler
-        /// multiple times will not reorder it. The respective instance will be called multiple times.
-        /// </remarks>
-        public void Use<TAction>(IMiddleware<TAction> middleware)
         {
             if (middleware == null)
                 throw new ArgumentNullException(nameof(middleware));
 
-            Use(new MiddlewareAdapter<TAction>(middleware));
+            return _middlewarePipeline.AddLast(middleware);
+        }
+
+        /// <summary>Configures the given <paramref name="middleware"/> as the last handler in the pipeline.</summary>
+        /// <typeparam name="TAction">The action type for which the middleware applies.</typeparam>
+        /// <param name="middleware">The <see cref="IMiddleware{TAction}"/> to configure.</param>
+        /// <returns>Returns the ID of the configured <paramref name="middleware"/>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="middleware"/> is <c>null</c>.</exception>
+        /// <remarks>
+        /// The middleware pipeline is called in the same order they are configured, configuring a middleware handler
+        /// multiple times will not reorder it. The respective instance will be called multiple times.
+        /// </remarks>
+        public object Use<TAction>(IMiddleware<TAction> middleware)
+        {
+            if (middleware == null)
+                throw new ArgumentNullException(nameof(middleware));
+
+            return Use(new MiddlewareAdapter<TAction>(middleware));
         }
 
         /// <summary>Indicates whether the dispatcher is currently dispatching an action.</summary>
         public bool IsDispatching
             => _state == _dispatchingState;
 
-        /// <summary>Registers the provided <paramref name="store"/> for notifications. A <see cref="Store"/> may only be registered once.</summary>
-        /// <param name="store">The <see cref="Store"/> to register.</param>
-        /// <returns>Returns an object as an ID that can be used to unregister the provided <paramref name="store"/> from action dispatches.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="store"/> is <c>null</c>.</exception>
-        public object Register(Store store)
-        {
-            if (store == null)
-                throw new ArgumentNullException(nameof(store));
-            return Register(store.Handle);
-        }
-
-        /// <summary>Unregisters the provided <paramref name="store"/> from notifications.</summary>
-        /// <param name="store">The previously subscribed to action dispatches using the <see cref="Register(Store)"/> method.</param>
-        /// <returns>Returns <c>true</c> if the <paramref name="store"/> was unregistered; otherwise <c>false</c>.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="store"/> is <c>null</c>.</exception>
-        public bool Unregister(Store store)
-        {
-            if (store == null)
-                throw new ArgumentNullException(nameof(store));
-            return _subscribers.Remove(store.Handle);
-        }
-
         /// <summary>Registers the provided <paramref name="callback"/> for notifications. A callback may only be registered once.</summary>
         /// <param name="callback">The callback that will handle dispatched actions.</param>
-        /// <returns>Returns an object as an ID that can be used to unregister the provided <paramref name="callback"/> from action dispatches.</returns>
+        /// <returns>
+        /// Returns an object as an ID that can be used to wait for the provided <paramref name="callback"/> to complete during dispatches
+        /// or unregister the provided <paramref name="callback"/>.
+        /// </returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="callback"/> is <c>null</c>.</exception>
         public object Register(Action<object> callback)
         {
@@ -98,6 +88,31 @@ namespace FluxBase
             if (id == null)
                 throw new ArgumentNullException(nameof(id));
             return id is Action<object> callback && _subscribers.Remove(callback);
+        }
+
+        /// <summary>Registers the provided <paramref name="store"/> for notifications. A <see cref="Store"/> may only be registered once.</summary>
+        /// <param name="store">The <see cref="Store"/> to register.</param>
+        /// <returns>
+        /// Returns an object as an ID that can be used to wait for the provided <paramref name="store"/> to complete during dispatches
+        /// or unregister the provided <paramref name="store"/>.
+        /// </returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="store"/> is <c>null</c>.</exception>
+        public object Register(Store store)
+        {
+            if (store == null)
+                throw new ArgumentNullException(nameof(store));
+            return Register(store.Handle);
+        }
+
+        /// <summary>Unregisters the provided <paramref name="store"/> from notifications.</summary>
+        /// <param name="store">The previously subscribed <see cref="Store"/> to action dispatches using the <see cref="Register(Store)"/> method.</param>
+        /// <returns>Returns <c>true</c> if the <paramref name="store"/> was unregistered; otherwise <c>false</c>.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="store"/> is <c>null</c>.</exception>
+        public bool Unregister(Store store)
+        {
+            if (store == null)
+                throw new ArgumentNullException(nameof(store));
+            return _subscribers.Remove(store.Handle);
         }
 
         /// <summary>Dispatches an action to all subscribed callbacks.</summary>
