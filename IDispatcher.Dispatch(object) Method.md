@@ -3,10 +3,8 @@
 
 Dispatches an action to all subscribed callbacks.
 
-This is a [public](https://docs.microsoft.com/dotnet/csharp/language-reference/keywords/public) method.
-
 ```c#
-public void Dispatch(object action)
+void Dispatch(object action)
 ```
 
 ### Parameters

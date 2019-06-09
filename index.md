@@ -5,6 +5,8 @@ title: Home
 FluxBase Namespace
 ------------------
 * __[IDispatcher](IDispatcher Interface)__ - Represents an interface for dispatching actions.
+* __[IMiddleware](IMiddleware Interface)__ - Represents a middleware pipeline element for handling actions before and after they are actually dispatched to action handlers.
+* __[IMiddleware\<TAction\>](IMiddleware{TAction} Interface)__ - Represents a middleware pipeline element for handling actions before and after they are actually dispatched to action handlers.
 * __[Dispatcher](Dispatcher Class)__ - Represents a dispatcher, responsible for dispatching actions to subscribers (stores). Follows the publish-subscribe pattern.
 
 Previous Releases

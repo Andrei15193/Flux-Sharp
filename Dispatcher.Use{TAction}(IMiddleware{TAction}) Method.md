@@ -10,10 +10,10 @@ public object Use<TAction>(IMiddleware<TAction> middleware)
 ```
 
 ### Generic Parameters
-* __TAction__ The action type for which the middleware applies.
+* __TAction__ The type of actions for which the middleware applies.
 
 ### Parameters
-* __middleware__ [IMiddleware](IMiddleware{TAction} Interface)\<TAction\>  
+* __middleware__ [IMiddleware\<TAction\>](IMiddleware{TAction} Interface)  
 The [IMiddleware](IMiddleware{TAction} Interface)\<TAction\> to configure.
 
 ### Returns [object](https://docs.microsoft.com/dotnet/api/system.object)

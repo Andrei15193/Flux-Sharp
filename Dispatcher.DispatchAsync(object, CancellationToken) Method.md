@@ -22,7 +22,7 @@ Returns a [Task](https://docs.microsoft.com/dotnet/api/system.threading.tasks.ta
 * __[InvalidOperationException](https://docs.microsoft.com/dotnet/api/system.invalidoperationexception)__ - Thrown when the dispatcher is already dispatching an action.
 
 ### Remarks
-This method is not available for .NET Framework 2.0, .NET Framework 3.0 and  .NET Framework 3.5.
+This method is not available for .NET Framework 2.0, .NET Framework 3.0 and .NET Framework 3.5 builds.
 
 ### See Also
 * [FluxBase](index)

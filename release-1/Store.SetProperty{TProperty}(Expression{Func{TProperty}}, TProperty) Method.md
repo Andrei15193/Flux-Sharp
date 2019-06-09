@@ -13,7 +13,7 @@ protected void SetProperty<TProperty>(Expression<Func<TProperty>> property, TPro
 * __TProperty__ The type of the property that was changed.
 
 ### Parameters
-* __property__ [Expression](https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression-1)\<[Func](https://docs.microsoft.com/dotnet/api/system.func-1)\<TProperty\>\>  
+* __property__ [Expression](https://docs.microsoft.com/dotnet/api/system.linq.expressions.expression-1)\<[Func\<TProperty\>](https://docs.microsoft.com/dotnet/api/system.func-1)\>  
 The property to update.
 * __value__ TProperty  
 The new value to set to the property.

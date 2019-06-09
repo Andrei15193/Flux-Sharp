@@ -3,10 +3,8 @@
 
 Asynchronously dispatches an action to all subscribed callbacks.
 
-This is a [public](https://docs.microsoft.com/dotnet/csharp/language-reference/keywords/public) method.
-
 ```c#
-public Task DispatchAsync(object action, CancellationToken cancellationToken)
+Task DispatchAsync(object action, CancellationToken cancellationToken)
 ```
 
 ### Parameters
@@ -22,7 +20,7 @@ Returns a [Task](https://docs.microsoft.com/dotnet/api/system.threading.tasks.ta
 * __[InvalidOperationException](https://docs.microsoft.com/dotnet/api/system.invalidoperationexception)__ - Thrown when the dispatcher is already dispatching an action.
 
 ### Remarks
-This method is not available for .NET Framework 2.0, .NET Framework 3.0 and  .NET Framework 3.5.
+This method is not available for .NET Framework 2.0, .NET Framework 3.0 and .NET Framework 3.5 builds.
 
 ### See Also
 * [FluxBase](index)
