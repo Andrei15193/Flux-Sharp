@@ -5,7 +5,7 @@ title: Home
 FluxBase Namespace
 ------------------
 
-TBC
+* __[Dispatcher](Dispatcher Class)__ - Represents a dispatcher, responsible for dispatching actions to subscribers (stores). Follows the publish-subscribe pattern.
 
 Previous Releases
 -----------------

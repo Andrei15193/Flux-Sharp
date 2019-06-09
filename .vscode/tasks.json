@@ -12,7 +12,7 @@
                 "jekyll",
                 "serve",
                 "--baseurl",
-                "/TestDocPages",
+                "/FluxBase",
                 "--open-url"
             ],
             "group": {
