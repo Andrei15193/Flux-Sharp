@@ -1,4 +1,4 @@
-[FluxBase](index) / [Dispatcher](Dispatcher Class) /  WaitFor(object) Method
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / WaitFor(object) Method
 ----------------------------------------------------------------------------
 
 Waits for the registered handler with the provided _id_ to complete.

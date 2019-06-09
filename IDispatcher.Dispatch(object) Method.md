@@ -1,5 +1,5 @@
-[FluxBase](index) / [Dispatcher](Dispatcher Class) / Dispatch(object) Method
------------------------------------------------------------------------------
+[FluxBase](index) / [IDispatcher](IDispatcher Interface) / Dispatch(object) Method
+----------------------------------------------------------------------------------
 
 Dispatches an action to all subscribed callbacks.
 
@@ -18,4 +18,4 @@ The action to dispatch.
 
 ### See Also
 * [FluxBase](index)
-* [Dispatcher](Dispatcher Class)
+* [IDispatcher](IDispatcher Interface)

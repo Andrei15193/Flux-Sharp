@@ -1,4 +1,4 @@
-[FluxBase](index) / [Dispatcher](Dispatcher Class) /  Use\<TAction\>(IMiddleware\<TAction\>) Method
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / Use\<TAction\>(IMiddleware\<TAction\>) Method
 ---------------------------------------------------------------------------------------------------
 
 Configures the given _middleware_ as the last handler in the pipeline.

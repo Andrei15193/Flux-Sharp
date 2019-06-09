@@ -1,4 +1,4 @@
-[FluxBase](index) / [Dispatcher](Dispatcher Class) /  Unregister(Store) Method
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / Unregister(Store) Method
 ------------------------------------------------------------------------------
 
 Unregisters the provided _store_ from notifications.

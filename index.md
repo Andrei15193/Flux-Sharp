@@ -4,7 +4,7 @@ title: Home
 
 FluxBase Namespace
 ------------------
-
+* __[IDispatcher](IDispatcher Interface)__ - Represents an interface for dispatching actions.
 * __[Dispatcher](Dispatcher Class)__ - Represents a dispatcher, responsible for dispatching actions to subscribers (stores). Follows the publish-subscribe pattern.
 
 Previous Releases

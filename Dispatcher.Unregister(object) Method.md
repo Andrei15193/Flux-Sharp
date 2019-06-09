@@ -1,4 +1,4 @@
-[FluxBase](index) / [Dispatcher](Dispatcher Class) /  Unregister(object) Method
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / Unregister(object) Method
 -------------------------------------------------------------------------------
 
 Unregisters the callback with the provided _id_ from notifications.

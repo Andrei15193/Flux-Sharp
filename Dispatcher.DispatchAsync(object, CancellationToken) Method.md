@@ -1,4 +1,4 @@
-[FluxBase](index) / [Dispatcher](Dispatcher Class) /  DispatchAsync(object, CancellationToken) Method
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / DispatchAsync(object, CancellationToken) Method
 -----------------------------------------------------------------------------------------------------
 
 Asynchronously dispatches an action to all subscribed callbacks.
@@ -20,6 +20,9 @@ Returns a [Task](https://docs.microsoft.com/dotnet/api/system.threading.tasks.ta
 
 ### Exceptions
 * __[InvalidOperationException](https://docs.microsoft.com/dotnet/api/system.invalidoperationexception)__ - Thrown when the dispatcher is already dispatching an action.
+
+### Remarks
+This method is not available for .NET Framework 2.0, .NET Framework 3.0 and  .NET Framework 3.5.
 
 ### See Also
 * [FluxBase](index)

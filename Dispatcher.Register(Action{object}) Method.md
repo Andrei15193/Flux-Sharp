@@ -1,4 +1,4 @@
-[FluxBase](index) / [Dispatcher](Dispatcher Class) /  Register(Action\<object\>) Method
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / Register(Action\<object\>) Method
 ---------------------------------------------------------------------------------------
 
 Registers the provided _callback_ for notifications. A callback may only be registered once.

@@ -1,4 +1,4 @@
-[FluxBase](index) / [Dispatcher](Dispatcher Class) /  WaitFor(IEnumerable\<Store\>) Method
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / WaitFor(IEnumerable\<Store\>) Method
 ------------------------------------------------------------------------------------------
 
 Waits for the provided _stores_ to complete.

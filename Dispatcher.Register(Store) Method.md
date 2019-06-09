@@ -1,4 +1,4 @@
-[FluxBase](index) / [Dispatcher](Dispatcher Class) /  Register(Store) Method
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / Register(Store) Method
 ----------------------------------------------------------------------------
 
 Registers the provided _store_ for notifications. A [Store](Store Class) may only be registered once.

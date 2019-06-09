@@ -1,4 +1,4 @@
-[FluxBase](index) / [Dispatcher](Dispatcher Class) /  Dispatch(ActionData) Method
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / Dispatch(ActionData) Method
 ---------------------------------------------------------------------------------
 
 Publishes a message to all subscribed callbacks.

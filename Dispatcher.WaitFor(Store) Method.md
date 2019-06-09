@@ -1,4 +1,4 @@
-[FluxBase](index) / [Dispatcher](Dispatcher Class) /  WaitFor(Store) Method
+[FluxBase](index) / [Dispatcher](Dispatcher Class) / WaitFor(Store) Method
 ---------------------------------------------------------------------------
 
 Waits for the provided _store_ to complete.

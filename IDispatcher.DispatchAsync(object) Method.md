@@ -1,5 +1,5 @@
-[FluxBase](index) / [Dispatcher](Dispatcher Class) / DispatchAsync(object) Method
-----------------------------------------------------------------------------------
+[FluxBase](index) / [IDispatcher](IDispatcher Interface) / DispatchAsync(object) Method
+---------------------------------------------------------------------------------------
 
 Asynchronously dispatches an action to all subscribed callbacks.
 
@@ -24,4 +24,4 @@ This method is not available for .NET Framework 2.0, .NET Framework 3.0 and  .NE
 
 ### See Also
 * [FluxBase](index)
-* [Dispatcher](Dispatcher Class)
+* [IDispatcher](IDispatcher Interface)
