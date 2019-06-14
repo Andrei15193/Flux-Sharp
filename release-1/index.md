@@ -22,7 +22,7 @@ With this series of tutorials we will be covering a basic application that helps
 
 Introduction
 ------------
-Flux Base is an implementation of Facebook's Flux architecture (see
+FluxBase is an implementation of Facebook's Flux architecture (see
 [https://facebook.github.io/flux/docs/overview.html](https://facebook.github.io/flux/docs/overview.html) for more details)
 for .NET targeting .NET Framework, .NET Core and .NET Standard allowing for the library to be used for any kind of desktop
 application.
