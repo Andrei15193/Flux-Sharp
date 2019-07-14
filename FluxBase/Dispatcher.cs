@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace FluxBase
 {
     /// <summary>Represents a dispatcher, responsible for dispatching actions to subscribers (stores). Follows the publish-subscribe pattern.</summary>
-    public class Dispatcher : IDispatcher
+    public class Dispatcher : IDispatcher, IDispatchWaitHandle
     {
         private const int _availableState = 0;
         private const int _dispatchingState = 1;
@@ -196,14 +196,17 @@ namespace FluxBase
         }
 #endif
 
-        /// <summary>Waits for the registered handler with the provided <paramref name="id"/> to complete.</summary>
-        /// <param name="id">The ID object previously returned from calling the <see cref="Register(Action{object})"/> method.</param>
+        /// <summary>Waits for the registered action handler with the provided <paramref name="id"/> to complete.</summary>
+        /// <param name="id">The ID object identifying the action handler to wait for.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="id"/> is <c>null</c>.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when there is no action currently dispatching.</exception>
         /// <remarks>The method only blocks if the referred callback is registered and has not yet been executed.</remarks>
         public void WaitFor(object id)
         {
             if (id == null)
                 throw new ArgumentNullException(nameof(id));
+            if (_state == _availableState)
+                throw new InvalidOperationException("Cannot wait for action handler when there is no active dispatch.");
 
             if (id is Action<object> callback && _currentSubscriber.Value != callback && _remainingSubscribers.Contains(callback))
             {
@@ -219,15 +222,17 @@ namespace FluxBase
             }
         }
 
-        /// <summary>Waits for the registered handlers with the provided <paramref name="ids"/> to complete.</summary>
-        /// <param name="ids">A collection of ID objects previously returned from calling the <see cref="Register(Action{object})"/> method.</param>
+        /// <summary>Waits for the registered action handlers with the provided <paramref name="ids"/> to complete.</summary>
+        /// <param name="ids">A collection of IDs identifying the action handlers to wait for.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="ids"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="ids"/> contains <c>null</c> values.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when there is no action currently dispatching.</exception>
         /// <remarks>The method only blocks for referred callbacks that are registered and have not yet been executed.</remarks>
         public void WaitFor(IEnumerable<object> ids)
         {
             if (ids == null)
                 throw new ArgumentNullException(nameof(ids));
+
             foreach (var id in ids)
             {
                 if (id == null)
@@ -236,31 +241,36 @@ namespace FluxBase
             }
         }
 
-        /// <summary>Waits for the registered handlers with the provided <paramref name="ids"/> to complete.</summary>
-        /// <param name="ids">A collection of ID objects previously returned from calling the <see cref="Register(Action{object})"/> method.</param>
+        /// <summary>Waits for the registered action handlers with the provided <paramref name="ids"/> to complete.</summary>
+        /// <param name="ids">A collection of IDs identifying the action handlers to wait for.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="ids"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="ids"/> contains <c>null</c> values.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when there is no action currently dispatching.</exception>
         /// <remarks>The method only blocks for referred callbacks that are registered and have not yet been executed.</remarks>
         public void WaitFor(params object[] ids)
             => WaitFor((IEnumerable<object>)ids);
 
         /// <summary>Waits for the provided <paramref name="store"/> to complete.</summary>
-        /// <param name="store">A <see cref="Store"/> previously subscribed using the <see cref="Register(Store)"/> method.</param>
+        /// <param name="store">A previously subscribed <see cref="Store"/> to wait for.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="store"/> is <c>null</c>.</exception>
-        /// <remarks>The method only blocks if the referred <paramref name="store"/> is registered and has not yet been executed.</remarks>
+        /// <exception cref="InvalidOperationException">Thrown when there is no action currently dispatching.</exception>
+        /// <remarks>The method only blocks for referred <paramref name="store"/> is registered and has not yet handled the current action dispatch.</remarks>
         public void WaitFor(Store store)
         {
             if (store == null)
                 throw new ArgumentNullException(nameof(store));
+            if (_state == _availableState)
+                throw new InvalidOperationException("Cannot wait for store when there is no active dispatch.");
 
             WaitFor(new Action<object>(store.Handle));
         }
 
         /// <summary>Waits for the provided <paramref name="stores"/> to complete.</summary>
-        /// <param name="stores">A collection of <see cref="Store"/>s previously subscribed using the <see cref="Register(Store)"/> method.</param>
+        /// <param name="stores">A collection of previously subscribed <see cref="Store"/>s to wait for.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="stores"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="stores"/> contains <c>null</c> values.</exception>
-        /// <remarks>The method only blocks for referred <paramref name="stores"/> that are registered and have not yet been executed.</remarks>
+        /// <exception cref="InvalidOperationException">Thrown when there is no action currently dispatching.</exception>
+        /// <remarks>The method only blocks for referred <paramref name="stores"/> that are registered and have not yet handled the current action dispatch.</remarks>
         public void WaitFor(IEnumerable<Store> stores)
         {
             if (stores == null)
@@ -275,10 +285,11 @@ namespace FluxBase
         }
 
         /// <summary>Waits for the provided <paramref name="stores"/> to complete.</summary>
-        /// <param name="stores">A collection of <see cref="Store"/>s previously subscribed using the <see cref="Register(Store)"/> method.</param>
+        /// <param name="stores">A collection of previously subscribed <see cref="Store"/>s to wait for.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="stores"/> is <c>null</c>.</exception>
         /// <exception cref="ArgumentException">Thrown when <paramref name="stores"/> contains <c>null</c> values.</exception>
-        /// <remarks>The method only blocks for referred <paramref name="stores"/> that are registered and have not yet been executed.</remarks>
+        /// <exception cref="InvalidOperationException">Thrown when there is no action currently dispatching.</exception>
+        /// <remarks>The method only blocks for referred <paramref name="stores"/> that are registered and have not yet handled the current action dispatch.</remarks>
         public void WaitFor(params Store[] stores)
             => WaitFor((IEnumerable<Store>)stores);
 

@@ -931,6 +931,56 @@ namespace FluxBase.Tests
         }
 
         [TestMethod]
+        public void WaitForOneIdWhileThereIsNoActiveDispatchThrowsException()
+        {
+            var dispatcher = new TestDispatcher();
+            var actionHandlerId = dispatcher.Register(delegate { });
+
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => dispatcher.WaitFor(actionHandlerId));
+
+            Assert.AreEqual(new InvalidOperationException("Cannot wait for action handler when there is no active dispatch.").Message, exception.Message);
+        }
+
+        [TestMethod]
+        public void WaitForMultipleIdsWhileThereIsNoActiveDispatchThrowsException()
+        {
+            var dispatcher = new TestDispatcher();
+            var firstActionHandlerId = dispatcher.Register(delegate { });
+            var secondActionHandlerId = dispatcher.Register(delegate { });
+
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => dispatcher.WaitFor(firstActionHandlerId, secondActionHandlerId));
+
+            Assert.AreEqual(new InvalidOperationException("Cannot wait for action handler when there is no active dispatch.").Message, exception.Message);
+        }
+
+        [TestMethod]
+        public void WaitForOneStoreWhileThereIsNoActiveDispatchThrowsException()
+        {
+            var dispatcher = new TestDispatcher();
+            Store store = new MockDelegateStore(delegate { });
+            dispatcher.Register(store);
+
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => dispatcher.WaitFor(store));
+
+            Assert.AreEqual(new InvalidOperationException("Cannot wait for store when there is no active dispatch.").Message, exception.Message);
+        }
+
+        [TestMethod]
+        public void WaitForMultipleStoresWhileThereIsNoActiveDispatchThrowsException()
+        {
+            var dispatcher = new TestDispatcher();
+            Store firstStore = new MockDelegateStore(delegate { });
+            dispatcher.Register(firstStore);
+
+            Store secondStore = new MockDelegateStore(delegate { });
+            dispatcher.Register(secondStore);
+
+            var exception = Assert.ThrowsException<InvalidOperationException>(() => dispatcher.WaitFor(firstStore, secondStore));
+
+            Assert.AreEqual(new InvalidOperationException("Cannot wait for store when there is no active dispatch.").Message, exception.Message);
+        }
+
+        [TestMethod]
         public async Task MiddlewareIsBeingCalledBeforeActualDispatch()
             => await _AssertAsync(
                 async (dispatch, testDispatcher) =>
