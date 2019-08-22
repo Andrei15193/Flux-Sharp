@@ -24,4 +24,8 @@ Updated store action handler lookup, only public methods with one parameter and 
     <None Include="..\LICENSE" Pack="true" PackagePath="" Visible="false" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'net40'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net45'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net451'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net452'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net46'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net461'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net462'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net47'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net471'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net472'">
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+  </ItemGroup>
+
 </Project>
