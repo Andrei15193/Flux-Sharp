@@ -20,8 +20,8 @@ jobs:
       with:
         dotnet-version: 2.2.108
 
-    - name: Setup VS Dev Environment
-      uses: seanmiddleditch/gha-setup-vsdevenv@v1
+    - name: Setup MSBuild.exe
+      uses: warrenbuckley/Setup-MSBuild@v1
       
     - name: Restore Packages
       run: nuget restore FluxBase.sln
