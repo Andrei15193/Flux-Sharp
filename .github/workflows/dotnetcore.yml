@@ -1,0 +1,27 @@
+name: .NET Build
+
+on:
+  push:
+    branches: master
+
+jobs:
+  build:
+
+    runs-on: [windows-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 2.2.108
+
+    - name: Setup VS Dev Environment
+      uses: seanmiddleditch/gha-setup-vsdevenv@v1
+
+    - name: Build with MSBuild
+      run: MSBuild FluxBase.sln /target:restore,build /p:Configuration=Release
+
+    - name: Test with dotnet
+      run: dotnet test FluxBase.sln
