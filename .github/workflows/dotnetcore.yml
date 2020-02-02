@@ -12,6 +12,9 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
+    - name: Setup NuGet.exe for use with actions
+      uses: NuGet/setup-nuget@v1.0.2
+
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -19,6 +22,9 @@ jobs:
 
     - name: Setup VS Dev Environment
       uses: seanmiddleditch/gha-setup-vsdevenv@v1
+      
+    - name: Restore Packages
+      run: nuget restore FluxBase.sln
 
     - name: Build with MSBuild
       run: MSBuild FluxBase.sln /target:restore,build /p:Configuration=Release
