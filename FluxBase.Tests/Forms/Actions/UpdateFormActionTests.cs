@@ -1,24 +1,23 @@
 ﻿using System;
 using FluxBase.Forms.Actions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace FluxBase.Tests.Forms.Actions
 {
-    [TestClass]
     public class UpdateFormActionTests
     {
-        [TestMethod]
+        [Fact]
         public void CreatingAnActionWithNullFormNameThrowsException()
         {
-            var exception = Assert.ThrowsException<ArgumentNullException>(() => new UpdateFormAction(null));
-            Assert.AreEqual(new ArgumentNullException("formName").Message, exception.Message);
+            var exception = Assert.Throws<ArgumentNullException>(() => new UpdateFormAction(null));
+            Assert.Equal(new ArgumentNullException("formName").Message, exception.Message);
         }
 
-        [TestMethod]
+        [Fact]
         public void CreatingAnActionWithNullUpdatesThrowsException()
         {
-            var exception = Assert.ThrowsException<ArgumentNullException>(() => new UpdateFormAction("formName", null));
-            Assert.AreEqual(new ArgumentNullException("updates").Message, exception.Message);
+            var exception = Assert.Throws<ArgumentNullException>(() => new UpdateFormAction("formName", null));
+            Assert.Equal(new ArgumentNullException("updates").Message, exception.Message);
         }
     }
 }

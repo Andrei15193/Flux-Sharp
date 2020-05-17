@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using FluxBase.Forms.Actions;
 using FluxBase.Forms.Store;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Xunit.Sdk;
 
 namespace FluxBase.Tests.Forms.Store
 {
-    [TestClass]
     public class FormStoreTests
     {
         private FormStore _formStore;
@@ -17,8 +17,7 @@ namespace FluxBase.Tests.Forms.Store
         private IFormFieldData _field;
         private IEnumerable<string> _fieldPropertyChanges;
 
-        [TestInitialize]
-        public void TestInitialize()
+        public FormStoreTests()
         {
             var storePropertyChanges = new List<string>();
             _storePropertyChanges = storePropertyChanges;
@@ -39,71 +38,71 @@ namespace FluxBase.Tests.Forms.Store
             _field.PropertyChanged += (sender, e) => fieldPropertyChanges.Add(e.PropertyName);
         }
 
-        [TestMethod]
+        [Fact]
         public void TheFormStoreInitiallyContainsNoForms()
         {
             var formStore = new FormStore();
 
-            Assert.IsFalse(formStore.Forms.Any());
+            Assert.False(formStore.Forms.Any());
         }
 
-        [TestMethod]
+        [Fact]
         public void RetrievingAFormReturnsAnEmptyOne()
         {
             var form = _formStore["form"];
 
-            Assert.AreEqual("form", form.Name);
-            Assert.IsFalse(form.Errors.Any());
-            Assert.IsNull(form.ProcessingState);
-            Assert.IsFalse(form.IsProcessing);
+            Assert.Equal("form", form.Name);
+            Assert.False(form.Errors.Any());
+            Assert.Null(form.ProcessingState);
+            Assert.False(form.IsProcessing);
 
             AssertCollections(_formStore.Forms, new[] { _form, form });
-            Assert.IsFalse(form.Fields.Any());
+            Assert.False(form.Fields.Any());
         }
 
-        [TestMethod]
+        [Fact]
         public void RetrievingAFormWithTheSameNameReturnsTheSameInstance()
         {
             var sameForm = _formStore["TEST-form"];
 
-            Assert.AreSame(_form, sameForm);
+            Assert.Same(_form, sameForm);
         }
 
-        [TestMethod]
+        [Fact]
         public void RetrievingANullNamedFormThrowsException()
         {
-            var exception = Assert.ThrowsException<ArgumentNullException>(() => _formStore[null]);
-            Assert.AreEqual(new ArgumentNullException("formName").Message, exception.Message);
+            var exception = Assert.Throws<ArgumentNullException>(() => _formStore[null]);
+            Assert.Equal(new ArgumentNullException("formName").Message, exception.Message);
         }
 
-        [TestMethod]
+        [Fact]
         public void RetrievingAFieldReturnsAnEmptyOne()
         {
             var field = _form["field"];
 
-            Assert.IsNull(field.Value);
-            Assert.AreEqual("field", field.Name);
-            Assert.IsFalse(field.Errors.Any());
-            Assert.IsNull(field.ProcessingState);
-            Assert.IsFalse(field.IsProcessing);
+            Assert.Null(field.Value);
+            Assert.Equal("field", field.Name);
+            Assert.False(field.Errors.Any());
+            Assert.Null(field.ProcessingState);
+            Assert.False(field.IsProcessing);
         }
 
-        [TestMethod]
+        [Fact]
         public void RetrievingAFieldWithTheSameNameReturnsTheSameInstance()
         {
             var sameField = _form["test-FIELD"];
 
-            Assert.AreSame(_field, sameField);
+            Assert.Same(_field, sameField);
         }
 
-        [TestMethod]
+        [Fact]
         public void RetrievingANullNamedFieldThrowsException()
         {
-            var exception = Assert.ThrowsException<ArgumentNullException>(() => _form[null]);
-            Assert.AreEqual(new ArgumentNullException("fieldName").Message, exception.Message);
+            var exception = Assert.Throws<ArgumentNullException>(() => _form[null]);
+            Assert.Equal(new ArgumentNullException("fieldName").Message, exception.Message);
         }
 
-        [TestMethod]
+        [Fact]
         public void UpdatingAFormFieldValueSetsItsValue()
         {
             var value = new object();
@@ -114,7 +113,7 @@ namespace FluxBase.Tests.Forms.Store
                 )
             );
 
-            Assert.AreSame(value, _form["test-field"].Value);
+            Assert.Same(value, _form["test-field"].Value);
             AssertCollections(
                 _storePropertyChanges,
                 new[]
@@ -140,7 +139,7 @@ namespace FluxBase.Tests.Forms.Store
             );
         }
 
-        [TestMethod]
+        [Fact]
         public void SettingTheSameValueDoesNotRaisePropertyChangedEvents()
         {
             _formStore.Handle(
@@ -164,10 +163,10 @@ namespace FluxBase.Tests.Forms.Store
                     nameof(IFormData.Fields)
                 }
             );
-            Assert.IsFalse(_fieldPropertyChanges.Any());
+            Assert.False(_fieldPropertyChanges.Any());
         }
 
-        [TestMethod]
+        [Fact]
         public void UpdatingAFormFieldErrorSetsItsErrors()
         {
             var errors = new[] { "error 1", "error 2" };
@@ -178,7 +177,7 @@ namespace FluxBase.Tests.Forms.Store
                 )
             );
 
-            Assert.AreSame(errors, _form["test-field"].Errors);
+            Assert.Same(errors, _form["test-field"].Errors);
             AssertCollections(
                 _storePropertyChanges,
                 new[]
@@ -204,7 +203,7 @@ namespace FluxBase.Tests.Forms.Store
             );
         }
 
-        [TestMethod]
+        [Fact]
         public void SettingTheSameErrorsDoesNotRaisePropertyChangedEvents()
         {
             _formStore.Handle(
@@ -228,10 +227,10 @@ namespace FluxBase.Tests.Forms.Store
                     nameof(IFormData.Fields)
                 }
             );
-            Assert.IsFalse(_fieldPropertyChanges.Any());
+            Assert.False(_fieldPropertyChanges.Any());
         }
 
-        [TestMethod]
+        [Fact]
         public void SettingNullErrorsSetsEmptyCollection()
         {
             _formStore.Handle(
@@ -242,7 +241,7 @@ namespace FluxBase.Tests.Forms.Store
                 )
             );
 
-            Assert.IsFalse(_form["test-field"].Errors.Any());
+            Assert.False(_form["test-field"].Errors.Any());
             AssertCollections(
                 _storePropertyChanges,
                 new[]
@@ -271,7 +270,7 @@ namespace FluxBase.Tests.Forms.Store
             );
         }
 
-        [TestMethod]
+        [Fact]
         public void UpdatingAFormFieldProcessingStateSetsItsProcessingStateAndRelatedFlag()
         {
             var value = new object();
@@ -282,8 +281,8 @@ namespace FluxBase.Tests.Forms.Store
                 )
             );
 
-            Assert.AreEqual("loading", _form["test-field"].ProcessingState);
-            Assert.IsTrue(_form["test-field"].IsProcessing);
+            Assert.Equal("loading", _form["test-field"].ProcessingState);
+            Assert.True(_form["test-field"].IsProcessing);
             AssertCollections(
                 _storePropertyChanges,
                 new[]
@@ -312,7 +311,7 @@ namespace FluxBase.Tests.Forms.Store
             );
         }
 
-        [TestMethod]
+        [Fact]
         public void SettingTheSameProcessingStateDoesNotRaisePropertyChangedEvents()
         {
             _formStore.Handle(
@@ -336,10 +335,10 @@ namespace FluxBase.Tests.Forms.Store
                     nameof(IFormData.Fields)
                 }
             );
-            Assert.IsFalse(_fieldPropertyChanges.Any());
+            Assert.False(_fieldPropertyChanges.Any());
         }
 
-        [TestMethod]
+        [Fact]
         public void ChangingAFormFieldProcessingStateDoesNotChangeRelatedFlag()
         {
             var value = new object();
@@ -351,8 +350,8 @@ namespace FluxBase.Tests.Forms.Store
                 )
             );
 
-            Assert.AreEqual("processing", _form["test-field"].ProcessingState);
-            Assert.IsTrue(_form["test-field"].IsProcessing);
+            Assert.Equal("processing", _form["test-field"].ProcessingState);
+            Assert.True(_form["test-field"].IsProcessing);
             AssertCollections(
                 _storePropertyChanges,
                 new[]
@@ -384,7 +383,7 @@ namespace FluxBase.Tests.Forms.Store
             );
         }
 
-        [TestMethod]
+        [Fact]
         public void SettingTheProcessingStateOfAFieldToNullResetsTheRelatedFlag()
         {
             var value = new object();
@@ -396,8 +395,8 @@ namespace FluxBase.Tests.Forms.Store
                 )
             );
 
-            Assert.IsNull(_form["test-field"].ProcessingState);
-            Assert.IsFalse(_form["test-field"].IsProcessing);
+            Assert.Null(_form["test-field"].ProcessingState);
+            Assert.False(_form["test-field"].IsProcessing);
             AssertCollections(
                 _storePropertyChanges,
                 new[]
@@ -441,16 +440,16 @@ namespace FluxBase.Tests.Forms.Store
 
                 while (hasExpectedItem && hasActualItem)
                 {
-                    Assert.AreEqual(expectedItem.Current, actualItem.Current);
+                    Assert.Equal(expectedItem.Current, actualItem.Current);
 
                     hasExpectedItem = expectedItem.MoveNext();
                     hasActualItem = actualItem.MoveNext();
                 }
 
                 if (hasExpectedItem)
-                    Assert.Fail($"Expected: {expectedItem.Current}");
+                    throw new XunitException($"Expected: {expectedItem.Current}");
                 if (hasActualItem)
-                    Assert.Fail($"Unexpected: {actualItem.Current}");
+                    throw new XunitException($"Unexpected: {actualItem.Current}");
             }
         }
     }

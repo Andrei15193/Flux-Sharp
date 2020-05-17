@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading;
-#if !NET20 && !NET30 && !NET35
 using System.Threading.Tasks;
-#endif
 
 namespace FluxBase
 {
@@ -137,7 +135,6 @@ namespace FluxBase
             }
         }
 
-#if !NET20 && !NET30 && !NET35
         /// <summary>Asynchronously dispatches an action to all subscribed callbacks.</summary>
         /// <param name="action">The action to dispatch.</param>
         /// <exception cref="InvalidOperationException">Thrown when the dispatcher is already dispatching an action.</exception>
@@ -159,21 +156,11 @@ namespace FluxBase
                     try
                     {
                         _DispatchAction(action);
-#if NET40
-                        return Helper.CompletedTask;
-#elif NET45 || NET451 || NET452 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
-                        return Task.FromResult<object>(null);
-#else
                         return Task.CompletedTask;
-#endif
                     }
                     catch (Exception exception)
                     {
-#if NET40 || NET45 || NET451 || NET452 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
-                        return Helper.TaskFromException(exception);
-#else
                         return Task.FromException(exception);
-#endif
                     }
                 else
                 {
@@ -183,18 +170,13 @@ namespace FluxBase
             }
             catch (Exception exception)
             {
-#if NET40 || NET45 || NET451 || NET452 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
-                return Helper.TaskFromException(exception);
-#else
                 return Task.FromException(exception);
-#endif
             }
             finally
             {
                 _ExitDispatch();
             }
         }
-#endif
 
         /// <summary>Waits for the registered action handler with the provided <paramref name="id"/> to complete.</summary>
         /// <param name="id">The ID object identifying the action handler to wait for.</param>
@@ -339,31 +321,19 @@ namespace FluxBase
                 throw new ArgumentException("The provided id does not correspond to a configured middleware.", nameof(id));
         }
 
-#if !NET20 && !NET30 && !NET35
         private Task _DispatchNextAsync(object id, object action, CancellationToken cancellationToken)
         {
             if (id is LinkedListNode<IMiddleware> middlewareNode && middlewareNode.List == _middlewarePipeline)
                 if (middlewareNode.Next == null)
                 {
                     _DispatchAction(action);
-#if NET40
-                    return Helper.CompletedTask;
-#elif NET45 || NET451 || NET452 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
-                    return Task.FromResult<object>(null);
-#else
                     return Task.CompletedTask;
-#endif
                 }
                 else
                     return middlewareNode.Next.Value.HandleAsync(new AsyncMiddlewareContext(middlewareNode.Next, action, this), cancellationToken);
             else
-#if NET40 || NET45 || NET451 || NET452 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
-                return Helper.TaskFromException(new ArgumentException("The provided id does not correspond to a configured middleware.", nameof(id)));
-#else
                 return Task.FromException(new ArgumentException("The provided id does not correspond to a configured middleware.", nameof(id)));
-#endif
         }
-#endif
 
         private void _CheckDeadlockWait(Action<object> callback)
         {
@@ -399,7 +369,6 @@ namespace FluxBase
                 => _dispatcher._DispatchNext(_id, Action);
         }
 
-#if !NET20 && !NET30 && !NET35
         private sealed class AsyncMiddlewareContext : IMiddlewareAsyncContext
         {
             private readonly object _id;
@@ -423,6 +392,5 @@ namespace FluxBase
             public Task NextAsync(CancellationToken cancellationToken)
                 => _dispatcher._DispatchNextAsync(_id, Action, cancellationToken);
         }
-#endif
     }
 }

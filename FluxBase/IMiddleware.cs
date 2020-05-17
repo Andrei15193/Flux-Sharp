@@ -1,7 +1,5 @@
-﻿#if !NET20 && !NET30 && !NET35
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
-#endif
 
 namespace FluxBase
 {
@@ -74,13 +72,11 @@ namespace FluxBase
         /// <param name="context">The context of the current dispatch.</param>
         void Handle(IMiddlewareContext context);
 
-#if !NET20 && !NET30 && !NET35
         /// <summary>Asynchronously handles a currently executing dispatch.</summary>
         /// <param name="context">The context of the current dispatch.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> that can be used to signal cancellation.</param>
         /// <returns>Returns a <see cref="Task"/> representing the asynchronous operation.</returns>
         Task HandleAsync(IMiddlewareAsyncContext context, CancellationToken cancellationToken);
-#endif
     }
 
     /// <summary>Represents a typed middleware pipeline element for handling specific actions before and after they are actually dispatched to action handlers.</summary>
@@ -151,12 +147,10 @@ namespace FluxBase
         /// <param name="context">The context of the current dispatch.</param>
         void Handle(IMiddlewareContext<TAction> context);
 
-#if !NET20 && !NET30 && !NET35
         /// <summary>Asynchronously handles a currently executing dispatch.</summary>
         /// <param name="context">The context of the current dispatch.</param>
         /// <param name="cancellationToken">A <see cref="CancellationToken"/> that can be used to signal cancellation.</param>
         /// <returns>Returns a <see cref="Task"/> representing the asynchronous operation.</returns>
         Task HandleAsync(IMiddlewareAsyncContext<TAction> context, CancellationToken cancellationToken);
-#endif
     }
 }

@@ -1,20 +1,13 @@
 ﻿using FluxBase.Tests.Mocks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace FluxBase.Tests
 {
-    [TestClass]
     public class StoreTests
     {
-        private Dispatcher _Dispatcher { get; set; }
+        private Dispatcher _Dispatcher { get; } = new Dispatcher();
 
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            _Dispatcher = new Dispatcher();
-        }
-
-        [TestMethod]
+        [Fact]
         public void StoreWithMoreSpecificActionGetsNotifiedWhenMatchesExactly()
         {
             var store = new MockStore();
@@ -22,10 +15,10 @@ namespace FluxBase.Tests
 
             _Dispatcher.Dispatch(new object());
 
-            Assert.AreEqual(1, store.InvocationCount);
+            Assert.Equal(1, store.InvocationCount);
         }
 
-        [TestMethod]
+        [Fact]
         public void StoreWithMoreSpecificActionDoesNotGetNotifiedWhenUsingBaseAction()
         {
             var store = new MockStore<string>();
@@ -33,10 +26,10 @@ namespace FluxBase.Tests
 
             _Dispatcher.Dispatch(new object());
 
-            Assert.AreEqual(0, store.InvocationCount);
+            Assert.Equal(0, store.InvocationCount);
         }
 
-        [TestMethod]
+        [Fact]
         public void StoreWithBaseActionGetsNotifiedWhenUsingMoreSpecificAction()
         {
             var store = new MockStore();
@@ -44,17 +37,17 @@ namespace FluxBase.Tests
 
             _Dispatcher.Dispatch(new object());
 
-            Assert.AreEqual(1, store.InvocationCount);
+            Assert.Equal(1, store.InvocationCount);
         }
 
-        [TestMethod]
+        [Fact]
         public void NonVoidReturningMethodsAreNotRegistered()
         {
             var store = MockStore<object, int>.Instance;
 
             _Dispatcher.Dispatch(new object());
 
-            Assert.AreEqual(0, store.InvocationCount);
+            Assert.Equal(0, store.InvocationCount);
         }
     }
 }

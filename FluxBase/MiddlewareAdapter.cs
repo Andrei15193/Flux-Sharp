@@ -1,11 +1,7 @@
 ﻿using System;
-#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6 || NETCOREAPP1_0 || NETCOREAPP1_1
 using System.Reflection;
-#endif
-#if !NET20 && !NET30 && !NET35
 using System.Threading;
 using System.Threading.Tasks;
-#endif
 
 namespace FluxBase
 {
@@ -26,7 +22,6 @@ namespace FluxBase
                 context.Next();
         }
 
-#if !NET20 && !NET30 && !NET35
         public Task HandleAsync(IMiddlewareAsyncContext context, CancellationToken cancellationToken)
         {
             if (_IsCompatible<TAction>(context.Action))
@@ -34,18 +29,13 @@ namespace FluxBase
             else
                 return context.NextAsync(cancellationToken);
         }
-#endif
 
         private static bool _IsCompatible<T>(object value)
         {
             if (value is T)
                 return true;
             else if (value == null)
-#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6 || NETCOREAPP1_0 || NETCOREAPP1_1
                 if (typeof(T).GetTypeInfo().IsValueType)
-#else
-                if (typeof(T).IsValueType)
-#endif
                     return Nullable.GetUnderlyingType(typeof(T)) != null;
                 else
                     return true;

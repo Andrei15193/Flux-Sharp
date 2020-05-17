@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp1.0;netcoreapp1.1;netcoreapp2.0;netcoreapp2.1;netcoreapp2.2;net20;net30;net35;net40;net45;net451;net452;net46;net461;net462;net47;net471;net472;netstandard1.0;netstandard1.1;netstandard1.2;netstandard1.3;netstandard1.4;netstandard1.5;netstandard1.6;netstandard2.0</TargetFrameworks>
+    <TargetFramework>netstandard1.6</TargetFramework>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <TreatSpecificWarningsAsErrors />
@@ -23,9 +23,4 @@ Updated store action handler lookup, only public methods with one parameter and 
   <ItemGroup>
     <None Include="..\LICENSE" Pack="true" PackagePath="" Visible="false" />
   </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net40'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net45'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net451'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net452'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net46'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net461'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net462'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net47'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net471'&#xD;&#xA;                        OR '$(TargetFramework)' == 'net472'">
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-  </ItemGroup>
-
 </Project>

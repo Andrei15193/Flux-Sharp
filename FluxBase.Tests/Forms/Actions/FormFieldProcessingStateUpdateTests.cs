@@ -1,17 +1,16 @@
 ﻿using System;
 using FluxBase.Forms.Actions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace FluxBase.Tests.Forms.Actions
 {
-    [TestClass]
     public class FormFieldProcessingStateUpdateTests
     {
-        [TestMethod]
+        [Fact]
         public void CreatingAFormFieldProcessingStateUpdateWithNullFieldNameThrowsException()
         {
-            var exception = Assert.ThrowsException<ArgumentNullException>(() => new FormFieldProcessingStateUpdate(null, null));
-            Assert.AreEqual(new ArgumentNullException("fieldName").Message, exception.Message);
+            var exception = Assert.Throws<ArgumentNullException>(() => new FormFieldProcessingStateUpdate(null, null));
+            Assert.Equal(new ArgumentNullException("fieldName").Message, exception.Message);
         }
     }
 }

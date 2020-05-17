@@ -1,5 +1,4 @@
-﻿#if !NET20 && !NET30 && !NET35
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 namespace FluxBase
@@ -26,4 +25,3 @@ namespace FluxBase
             => _context.NextAsync(cancellationToken);
     }
 }
-#endif

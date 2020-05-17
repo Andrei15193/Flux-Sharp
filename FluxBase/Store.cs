@@ -3,32 +3,20 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
 using System.Linq;
-#endif
-#if !NET20 && !NET30
 using System.Linq.Expressions;
-#endif
 
 namespace FluxBase
 {
     /// <summary>Represents a store, responsible with managing application view state.</summary>
     public abstract class Store : INotifyPropertyChanged
     {
-#if NET20 || NET30 || NET35
-        private volatile IEnumerable<DispatchHandlerInfo> _dispatchHandlers;
-#else
         private readonly Lazy<IEnumerable<DispatchHandlerInfo>> _dispatchHandlers;
-#endif
 
         /// <summary>Initializes a new instance of the <see cref="Store"/> class.</summary>
         protected Store()
         {
-#if NET20 || NET30 || NET35
-            _dispatchHandlers = null;
-#else
             _dispatchHandlers = new Lazy<IEnumerable<DispatchHandlerInfo>>(_GetHandlerInfos);
-#endif
         }
 
         /// <summary>Occurs when a property value changes.</summary>
@@ -54,15 +42,9 @@ namespace FluxBase
 
         /// <summary>Notifies that a property was changed.</summary>
         /// <param name="propertyName">The name of the property that was changed.</param>
-#if !NET20 && !NET30 && !NET35 && !NET40
         protected void NotifyPropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-#else
-        protected void NotifyPropertyChanged(string propertyName)
-            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-#endif
 
-#if !NET20 && !NET30
         /// <summary>Dynamically updates a property and notifies observers about the change.</summary>
         /// <typeparam name="TProperty">The type of the property that was changed.</typeparam>
         /// <param name="property">The property to update.</param>
@@ -130,7 +112,6 @@ namespace FluxBase
                     throw new ArgumentException("Property expression does not resolve to a settable property of the current store.", nameof(property));
             }
         }
-#endif
 
         private Action<object> _TryFindDispatchHandler(Type actionType)
         {
@@ -138,22 +119,12 @@ namespace FluxBase
             int _acceptableMatchPrecision = 0;
             Action<object> _acceptableMatch = null;
 
-#if NET20 || NET30 || NET35
-            if (_dispatchHandlers == null)
-                _dispatchHandlers = _GetHandlerInfos();
-            using (var dispatchHandlerInfo = _dispatchHandlers.GetEnumerator())
-#else
             using (var dispatchHandlerInfo = _dispatchHandlers.Value.GetEnumerator())
-#endif
                 while (dispatchHandlerInfo.MoveNext() && _bestMatch == null)
                 {
                     if (dispatchHandlerInfo.Current.ParameterType == actionType)
                         _bestMatch = dispatchHandlerInfo.Current.DispatchHandler;
-#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
                     else if (dispatchHandlerInfo.Current.ParameterType.GetTypeInfo().IsAssignableFrom(actionType.GetTypeInfo()))
-#else
-                    else if (dispatchHandlerInfo.Current.ParameterType.IsAssignableFrom(actionType))
-#endif
                     {
                         var matchPrecision = _GetMatchPrecisionBetween(dispatchHandlerInfo.Current.ParameterType, actionType);
                         if (matchPrecision < _acceptableMatchPrecision || _acceptableMatch == null)
@@ -173,11 +144,7 @@ namespace FluxBase
                 var current = actual;
                 while (current != target)
                 {
-#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
                     current = current.GetTypeInfo().BaseType;
-#else
-                    current = current.BaseType;
-#endif
                     precision++;
                 }
 
@@ -192,11 +159,7 @@ namespace FluxBase
             var storeType = this.GetType();
             while (storeType != typeof(Store))
             {
-#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
                 foreach (var method in storeType.GetTypeInfo().DeclaredMethods.Where(method => method.IsPublic))
-#else
-                foreach (var method in storeType.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
-#endif
                     if (method.ReturnType == typeof(void) && !method.IsStatic)
                     {
                         var parameters = method.GetParameters();
@@ -206,22 +169,14 @@ namespace FluxBase
                             handlerInfos.Add(new DispatchHandlerInfo(actionType, _CreateDispatchHandler(method, actionType)));
                         }
                     }
-#if NETCOREAPP1_0 || NETCOREAPP1_1 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
                 storeType = storeType.GetTypeInfo().BaseType;
-#else
-                storeType = storeType.BaseType;
-#endif
             }
             return handlerInfos;
         }
 
         private static Action<object> _CreateHandler<TAction>(object target, MethodInfo handlerMethodInfo)
         {
-#if NET20 || NET30 || NET35 || NET40
-            var concreteHandler = (Action<TAction>)Delegate.CreateDelegate(typeof(Action<TAction>), target, handlerMethodInfo);
-#else
             var concreteHandler = (Action<TAction>)handlerMethodInfo.CreateDelegate(typeof(Action<TAction>), target);
-#endif
             return action => concreteHandler((TAction)action);
         }
 
@@ -240,11 +195,7 @@ namespace FluxBase
 
         private Action<object> _CreateDispatchHandler(MethodInfo dispatchHandlerMethodInfo, Type actionType)
         {
-#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5 || NETSTANDARD1_6
             var factoryMethod = typeof(Store).GetTypeInfo().GetDeclaredMethods(nameof(_CreateHandler)).Single();
-#else
-            var factoryMethod = typeof(Store).GetMethod(nameof(_CreateHandler), BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-#endif
             var dispatchHandler = (Action<object>)factoryMethod
                 .MakeGenericMethod(actionType)
                 .Invoke(this, new object[] { this, dispatchHandlerMethodInfo });
