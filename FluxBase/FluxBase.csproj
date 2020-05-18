@@ -4,23 +4,24 @@
     <TargetFramework>netstandard1.6</TargetFramework>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\$(AssemblyName).xml</DocumentationFile>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <TreatSpecificWarningsAsErrors />
     <Description>Provides core types and functionality to implement applications using the Flux architecture with .NET.</Description>
     <Authors>Andrei Fangli</Authors>
     <Copyright>Andrei Fangli</Copyright>
-    <PackageProjectUrl>https://andrei15193.github.io/FluxBase/</PackageProjectUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageReleaseNotes>
+      * Added middleware (similar to Redux middleware).
+      * Added asynchronous dispatch flow.
+      * Updated store action handler lookup, only public methods with one parameter and no result are mapped as handlers by default.
+      * __(Breaking change)__ Removed ActionData as base class for actions, any object can be used as an action now.</PackageReleaseNotes>
+    <PackageTags>flux;architecture;user;interface;ui</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Andrei15193/FluxBase.git</RepositoryUrl>
-    <PackageTags>flux architecture user interface ui</PackageTags>
-    <PackageIconUrl>https://raw.githubusercontent.com/Andrei15193/FluxBase/master/package_logo.png</PackageIconUrl>
-    <PackageReleaseNotes>* Added middleware (similar to Redux middleware).
-* Added asynchronous dispatch flow.
-* Updated store action handler lookup, only public methods with one parameter and no result are mapped as handlers by default.
-* (Breaking change) Removed ActionData as base class for actions, any object can be used as an action now.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="..\LICENSE" Pack="true" PackagePath="" Visible="false" />
+    <None Include="..\LICENSE" Pack="true" PackagePath=""/>
+    <None Include="..\logo.png" Pack="true" PackagePath="" />
   </ItemGroup>
 </Project>
