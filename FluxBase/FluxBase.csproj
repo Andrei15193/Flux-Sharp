@@ -11,10 +11,8 @@
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>logo.png</PackageIcon>
     <PackageReleaseNotes>
-      * Added middleware (similar to Redux middleware).
-      * Added asynchronous dispatch flow.
-      * Updated store action handler lookup, only public methods with one parameter and no result are mapped as handlers by default.
-      * __(Breaking change)__ Removed ActionData as base class for actions, any object can be used as an action now.</PackageReleaseNotes>
+      * __(Breaking change)__ Removed unsupported target frameworks (#8)
+    </PackageReleaseNotes>
     <PackageTags>flux;architecture;user;interface;ui</PackageTags>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/Andrei15193/FluxBase.git</RepositoryUrl>
