@@ -79,12 +79,8 @@ jobs:
           $packageVersion = "${majorVersion}.${minorVersion}.$($currentRevision)"
         }
 
-        $description = (Select-Xml -Path ./FluxBase/FluxBase.csproj -XPath "//Project/PropertyGroup/Description/text()").Node.Data.Trim()
-        $releaseNotes = (
-            (Select-Xml -Path ./FluxBase/FluxBase.csproj -XPath "//Project/PropertyGroup/PackageReleaseNotes/text()").Node.Data -split '\r?\n\r?' |
-              Where-Object { -not [string]::IsNullOrWhiteSpace($_) } |
-              Foreach-Object { $_.Trim() }
-          ) -join '%0A'
+        $description = (Select-Xml -Path ./FluxBase/FluxBase.csproj -XPath "//Project/PropertyGroup/Description/text()").Node.Data.Trim() -replace '\r?\n\r?','%0A'
+        $releaseNotes = (Select-Xml -Path ./FluxBase/FluxBase.csproj -XPath "//Project/PropertyGroup/PackageReleaseNotes/text()").Node.Data.Trim() -replace '\r?\n\r?','%0A'
 
         Write-Host "::set-output name=package_version::$packageVersion"
         Write-Host "::set-output name=assembly_version::$assemblyVersion"

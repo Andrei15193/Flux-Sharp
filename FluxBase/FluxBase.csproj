@@ -12,7 +12,7 @@
     <PackageIcon>logo.png</PackageIcon>
     <PackageProjectUrl>https://andrei15193.github.io/FluxBase</PackageProjectUrl>
     <PackageReleaseNotes>
-      * __(Breaking change)__ Removed unsupported target frameworks (#8)
+* __(Breaking change)__ Removed unsupported target frameworks (#8)
     </PackageReleaseNotes>
     <PackageTags>flux;architecture;user;interface;ui</PackageTags>
     <RepositoryType>git</RepositoryType>
