@@ -10,6 +10,7 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageIcon>logo.png</PackageIcon>
+    <PackageProjectUrl>https://andrei15193.github.io/FluxBase</PackageProjectUrl>
     <PackageReleaseNotes>
       * __(Breaking change)__ Removed unsupported target frameworks (#8)
     </PackageReleaseNotes>
